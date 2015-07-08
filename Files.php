@@ -11,8 +11,7 @@ class Shikiryu_Backup_Files extends Shikiryu_Backup_Abstract
     {
         parent::__construct();
         if(!empty($filesToBackup) && is_array($filesToBackup)){
-            $names = $filesToBackup;
-            array_walk($names, array($this, '_getNames'));
+            $names = array_map("basename",$filesToBackup);
             $this->_filesToBackup = array_combine($filesToBackup,$names);
         }
     }
@@ -24,13 +23,12 @@ class Shikiryu_Backup_Files extends Shikiryu_Backup_Abstract
      *
      * @return $this
      */
-    function setFilePath($filestobackup = array())
+    function setFilePath($filesToBackup = array())
     {
-        if(!empty($filestobackup) && is_array($filestobackup))
+        if(!empty($filesToBackup) && is_array($filesToBackup))
         {
-            $names = $filestobackup;
-            array_walk($names, 'basename');
-            $this->_filesToBackup = array_combine($filestobackup,$names);
+            $names = array_map("basename",$filesToBackup);
+            $this->_filesToBackup = array_combine($filesToBackup,$names);
         }
         return $this;
     }

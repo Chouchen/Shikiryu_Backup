@@ -19,6 +19,22 @@ class Shikiryu_Backup_Abstract
     }
 
     /**
+     * @return array
+     */
+    public function getFilesToBackup()
+    {
+        return $this->_filesToBackup;
+    }
+
+    /**
+     * @return array
+     */
+    public function getStreamsToBackup()
+    {
+        return $this->_streamsToBackup;
+    }
+
+    /**
      * Add the current date with the given format into the files names
      *
      * @param string $format
@@ -78,17 +94,32 @@ class Shikiryu_Backup_Abstract
         return $this;
     }
 
-    function backupToEmail($to, $from, $objet, $mes)
+    /**
+     *
+     * @param $name string
+     * @param $args mixed
+     *
+     * @return bool
+     */
+    public function __call($name, $args)
+    {
+        if (substr($name,0,8) == 'backupTo') {
+            $type = substr($name, 8);
+            return Shikiryu_Backup_Transport_Factory::getAndSend($type, $this, $args);
+        }
+    }
+
+    /*function backupToEmail($to, $from, $object, $mes)
     {
         $email = new Shikiryu_Backup_Email();
         $email->addTo($to)
                 ->setFrom($from)
-                ->setSubject($objet)
+                ->setSubject($object)
                 ->setMessage($mes)
                 ->setFiles($this->_filesToBackup)
                 ->setStreams($this->_streamsToBackup);
         return $email->send();
-    }
+    }*/
 
     function backupToDropbox()
     {
@@ -103,6 +134,9 @@ class Shikiryu_Backup_Abstract
                 ->send();
     }
 
+    /**
+     * @param $folder
+     */
     function backupToFolder($folder)
     {
         if (!empty($folder)) {

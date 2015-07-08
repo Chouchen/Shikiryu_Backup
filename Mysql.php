@@ -2,7 +2,8 @@
 
 include_once  dirname(__FILE__) . '/Abstract.php';
 
-class Shikiryu_Backup_MYSQL extends Shikiryu_Backup_Abstract {
+class Shikiryu_Backup_MYSQL extends Shikiryu_Backup_Abstract
+{
 
     /**
      * @var $_pdo PDO

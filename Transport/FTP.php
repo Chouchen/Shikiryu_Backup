@@ -1,74 +1,80 @@
 <?php
 
-class Shikiryu_Backup_FTP {
+class Shikiryu_Backup_Transport_Ftp extends Shikiryu_Backup_Transport_Abstract
+{
 
-    private $_path;
+    private $path;
     
-    private $_connection;
+    private $connection;
     
-    private $_files;
-    private $_streams;
-    
-    function __construct($server, $login, $pwd, $path='/') {
-        if ($path != '') {
-            $path = sprintf('/%s/', ltrim(rtrim($path, '/'),'/'));
-//            if (substr($path, 0, 1) != '/')
-//                $path = '/' . $path;
-//            if (substr($path, 0, -1) != '/')
-//                $path .= '/';
+    private $files;
+    private $streams;
+
+    public function __construct($backup, $server, $login, $pwd, $path='/') {
+        parent::__construct($backup);
+
+        $this->path = $this->config['path'];
+        if (!empty($this->config['path'])) {
+            $this->path = sprintf('/%s/', ltrim(rtrim($this->config['path'], '/'),'/'));
         }
-        $this->_path = $path;
-        $this->_connection = ftp_connect($server);
 
-        $login = ftp_login($this->_connection, $login, $pwd);
-        if (!$this->_connection || !$login) {
+        $this->connection = ftp_connect($this->config['host']);
+
+        $login = ftp_login($this->connection, $this->config['login'], $this->config['password']);
+        if (!$this->connection || !$login) {
             throw new Exception('Connexion FTP refusée.');
         }
+
+        $this->setFiles($this->backup->getFilesToBackup());
+        $this->setStreams($this->backup->getStreamsToBackup());
     }
     
-    function setFiles($files = array())
+    private function setFiles($files = array())
     {
         if (is_array($files) && !empty($files))
-            $this->_files = $files;
+            $this->files = $files;
         return $this;
     }
-    
-    function setStreams($streams = array()) {
+
+    private function setStreams($streams = array()) {
         if (is_array($streams) && !empty($streams))
-            $this->_streams = $streams;
+            $this->streams = $streams;
         return $this;
     }
     
-    function send()
+    public function send()
     {
-        if (!empty($this->_files)){
-            foreach ($this->_files as $file => $name) {
-                $upload = ftp_put($this->_connection, $this->_path.$name, $file, FTP_ASCII);
+        $sent = true;
+        if (!empty($this->files)){
+            foreach ($this->files as $file => $name) {
+                // TODO PASSIVE MODE
+                $upload = ftp_put($this->connection, $this->path.$name, $file, FTP_ASCII);
                 if (!$upload) {
-                    echo 'FTP upload manquée de '.$file.' vers '.$this->_path.$name;
+                    $sent = false;
+                    echo 'FTP upload manquée de '.$file.' vers '.$this->path.$name;
                 }
-//                else echo 'upload réussi de '.$file.' vers '.$this->_path.$name;
             }
         }
         
-        if (!empty($this->_streams)){
-            foreach ($this->_streams as $name => $stream) {
+        if (!empty($this->streams)){
+            foreach ($this->streams as $name => $stream) {
                 if (count(explode('.', $name)) < 2)
                     $name = 'backup' . $name . '.txt';
                 file_put_contents($name, $stream);
-                $upload = ftp_put($this->_connection, $this->_path.$name, $name, FTP_ASCII);
+                // TODO PASSIVE MODE
+                $upload = ftp_put($this->connection, $this->path.$name, $name, FTP_ASCII);
                 if (!$upload) {
                     echo 'FTP upload manquée de '.$name.' vers '.$this->_path.$name;
+                    $sent = false;
                 }
-//                else echo 'upload réussi de '.$name.' vers '.$this->_path.$name;
                 unlink($name);
             }
         }
     }
     
-    function __destruct()
+    public function __destruct()
     {
-        ftp_close($this->_connection);
+        ftp_close($this->connection);
     }
 
     

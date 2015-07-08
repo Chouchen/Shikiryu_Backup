@@ -1,14 +1,15 @@
 <?php
 
-class Shikiryu_Backup_Email {
+class Shikiryu_Backup_Transport_Email extends Shikiryu_Backup_Transport_Abstract
+{
 
-    private $_to;
-    private $_from;
-    private $_encoding;
-    private $_subject;
-    private $_message;
-    private $_files;
-    private $_streams;
+    private $to;
+    private $from;
+    private $encoding;
+    private $subject;
+    private $message;
+    private $files;
+    private $streams;
     public static $mimeTypes = array(
         'txt' => 'text/plain',
         'htm' => 'text/html',
@@ -138,10 +139,18 @@ class Shikiryu_Backup_Email {
     }
 
     /**
-     * @param string $enc encoding of the mail
+     * @param Shikiryu_Backup_Abstract $backup
      */
-    function __construct($enc = 'UTF-8') {
-        $this->_encoding = $enc;
+    public function __construct(Shikiryu_Backup_Abstract $backup) {
+        parent::__construct($backup);
+        $this->setFiles($this->backup->getFilesToBackup());
+        $this->setStreams($this->backup->getStreamsToBackup());
+        $this->to       = $this->config['to'];
+        $this->from     = $this->config['from'];
+        $this->encoding = $this->config['encoding'];
+        $this->subjet   = $this->config['subject'];
+        $this->message  = $this->config['message'];
+        $this->encoding = $this->config['encoding'];
     }
 
     /**
@@ -151,8 +160,9 @@ class Shikiryu_Backup_Email {
      *
      * @return $this
      */
-    function addTo($to) {
-        $this->_to = $to;
+    private function addTo($to)
+    {
+        $this->to = $to;
         return $this;
     }
 
@@ -163,8 +173,9 @@ class Shikiryu_Backup_Email {
      *
      * @return $this
      */
-    function setFrom($from) {
-        $this->_from = $from;
+    private function setFrom($from)
+    {
+        $this->from = $from;
         return $this;
     }
 
@@ -175,8 +186,9 @@ class Shikiryu_Backup_Email {
      *
      * @return $this
      */
-    function setSubject($sub) {
-        $this->_subject = strip_tags($sub);
+    private function setSubject($sub)
+    {
+        $this->subject = strip_tags($sub);
         return $this;
     }
 
@@ -187,21 +199,24 @@ class Shikiryu_Backup_Email {
      *
      * @return $this
      */
-    function setMessage($mes) {
-        $this->_message = strip_tags($mes);
+    private function setMessage($mes)
+    {
+        $this->message = strip_tags($mes);
         return $this;
     }
 
-    function setFiles($files = array()) {
+    private function setFiles($files = array())
+    {
         if (is_array($files) && !empty($files)) {
-            $this->_files = $files;
+            $this->files = $files;
         }
         return $this;
     }
-    
-    function setStreams($streams = array()) {
+
+    private function setStreams($streams = array())
+    {
         if (is_array($streams) && !empty($streams)) {
-            $this->_streams = $streams;
+            $this->streams = $streams;
         }
         return $this;
     }
@@ -213,14 +228,14 @@ class Shikiryu_Backup_Email {
      *
      * @return bool
      */
-    function send() {
+    public function send() {
 	
 		// Checking files are selected
 		$zip = new ZipArchive(); // Load zip library
 		$zip_name = time().".zip"; // Zip name
 		if($zip->open(dirname(__FILE__).'/bu/'.$zip_name, ZIPARCHIVE::CREATE)==TRUE) {
-			if(!empty($this->_files)) {
-                foreach($this->_files as $file)
+			if(!empty($this->files)) {
+                foreach($this->files as $file)
                 {
                     $zip->addFile($file); // Adding files into zip
                 }
@@ -228,21 +243,21 @@ class Shikiryu_Backup_Email {
 			$zip->close();
 		}
 		
-		$this->_files = array(dirname(__FILE__).'/bu/'.$zip_name=>dirname(__FILE__).'/bu/'.$zip_name);
+		$this->files = array(dirname(__FILE__).'/bu/'.$zip_name=>dirname(__FILE__).'/bu/'.$zip_name);
 
         $random_hash = md5(date('r', time()));
-        $headers = "From: " . $this->_from . "\r\nReply-To: " . $this->_from;
+        $headers = "From: " . $this->from . "\r\nReply-To: " . $this->from;
         $headers .= "\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"" . $random_hash . "\"";
         $output = "
 
 --$random_hash
-Content-Type: text/plain; charset='" . strtolower($this->_encoding) . "'
+Content-Type: text/plain; charset='" . strtolower($this->encoding) . "'
 Content-Transfer-Encoding: 8bit
  
-" . $this->_message . "\r\n";
+" . $this->message . "\r\n";
         
-        if(!empty($this->_files))
-        foreach($this->_files as $file=>$name) {
+        if(!empty($this->files))
+        foreach($this->files as $file=>$name) {
             $name = end(explode('/', $name));
             $output .= "
 --$random_hash
@@ -253,8 +268,8 @@ Content-Disposition: attachment; filename=" . $name . "
 " . chunk_split(base64_encode(file_get_contents($file)));
         }
         
-        if(!empty($this->_streams))
-        foreach($this->_streams as $name=>$stream) {
+        if(!empty($this->streams))
+        foreach($this->streams as $name=>$stream) {
             if(count(explode('.',$name))<2) $name = 'backup'.$name.'.txt';
             $output .= "
 --$random_hash
@@ -265,7 +280,7 @@ Content-Disposition: attachment; filename=" . $name . "
 " . chunk_split(base64_encode($stream));
         }
         $output.="--$random_hash--";
-        return mail($this->_to, $this->_subject, $output, $headers);
+        return mail($this->to, $this->subject, $output, $headers);
     }
 
 }
