@@ -152,7 +152,7 @@ class Email extends TransportAbstract
         $this->to       = $this->config['to'];
         $this->from     = $this->config['from'];
         $this->encoding = $this->config['encoding'];
-        $this->subjet   = $this->config['subject'];
+        $this->subject  = $this->config['subject'];
         $this->message  = $this->config['message'];
         $this->encoding = $this->config['encoding'];
     }
@@ -229,25 +229,28 @@ class Email extends TransportAbstract
      * Send the mail
      *
      * @see #mail
-     *
      * @return bool
+     * @throws \Exception
      */
-    public function send() {
+    public function send()
+    {
 	
 		// Checking files are selected
 		$zip = new \ZipArchive(); // Load zip library
 		$zip_name = time().".zip"; // Zip name
-		if($zip->open(TEMP_DIR.$zip_name, \ZIPARCHIVE::CREATE)==TRUE) {
+		if ($zip->open(TEMP_DIR.$zip_name, \ZIPARCHIVE::CREATE)==TRUE) {
 			if(!empty($this->files)) {
-                foreach($this->files as $file)
+                foreach($this->files as $file => $name)
                 {
-                    $zip->addFile($file); // Adding files into zip
+                    $zip->addFile($file, $name); // Adding files into zip
                 }
             }
 			$zip->close();
-		}
+		} else {
+            throw new \Exception('Transport::Email::Can\'t zip the given backup.');
+        }
 		
-		$this->files = array(TEMP_DIR.$zip_name=>dirname(__FILE__).'/bu/'.$zip_name);
+		$this->files = array(TEMP_DIR.$zip_name=>$zip_name);
 
         $random_hash = md5(date('r', time()));
         $headers = "From: " . $this->from . "\r\nReply-To: " . $this->from;
@@ -262,8 +265,6 @@ Content-Transfer-Encoding: 8bit
         
         if(!empty($this->files))
         foreach($this->files as $file => $name) {
-            $name = explode('/', $name);
-            $name = end($name);
             $output .= "
 --$random_hash
 Content-Type: " . self::getMimeType($file) . "; name=" . $name . "

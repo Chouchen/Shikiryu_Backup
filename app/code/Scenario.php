@@ -21,14 +21,10 @@ class Scenario {
 
     public static function autoload($class)
     {
-        // Autoload only "sub-namespaced" class
         if (strpos($class, __NAMESPACE__.'\\') === 0)
         {
-            // Delete current namespace from class one
             $relative_NS     = str_replace(__NAMESPACE__, '', $class);
-            // Translate namespace structure into directory structure
             $translated_path = str_replace('\\', '/', $relative_NS);
-            // Load class suffixed by ".class.php"
             require __DIR__ . '/' . $translated_path . '.php';
         }
     }
@@ -45,26 +41,51 @@ class Scenario {
 
     public function send()
     {
-        $this->transport->send();
+        try {
+            $this->transport->send();
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
+    /**
+     * Launch the whole job
+     *
+     * @param $scenario
+     *
+     * @throws \Exception
+     */
     public static function launch($scenario)
     {
         // add autoloader
         static::register();
 
+        $scenario = __DIR__.'/../scenario/'.$scenario;
+
         // check the given scenario
         if (is_readable($scenario)) {
             $scenario = json_decode(file_get_contents($scenario), true);
             if (!is_null($scenario) && static::isValid($scenario)) {
-                $scenario = new self($scenario);
-                $scenario->send();
+                try {
+                    $scenario = new self($scenario);
+                    $scenario->send();
+                } catch (\Exception $e) {
+                    throw $e;
+                }
+                exit;
             }
             throw new \Exception('invalid scenario.');
         }
         throw new \Exception('scenario not found.');
     }
 
+    /**
+     * Check given scenario validation
+     *
+     * @param array $scenario
+     *
+     * @return bool
+     */
     public static function isValid(array $scenario)
     {
         return
