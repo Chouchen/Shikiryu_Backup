@@ -1,12 +1,16 @@
 <?php
 
-abstract class Shikiryu_Backup_Transport_Abstract
+namespace Shikiryu\Backup\Transport;
+
+use Shikiryu\Backup\Backup\BackupAbstract;
+
+abstract class TransportAbstract
 {
 
     protected $backup;
     protected $config;
 
-    public function __construct(Shikiryu_Backup_Abstract $backup)
+    public function __construct(BackupAbstract $backup)
     {
         $config         = parse_ini_file(dirname(__FILE__).'/../config/config.ini');
         $classname      = get_class($this);

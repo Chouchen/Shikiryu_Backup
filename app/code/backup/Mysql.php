@@ -1,8 +1,8 @@
 <?php
 
-include_once  dirname(__FILE__) . '/Abstract.php';
+namespace Shikiryu\Backup\Backup;
 
-class Shikiryu_Backup_MYSQL extends Shikiryu_Backup_Abstract
+class Mysql extends BackupAbstract
 {
 
     /**

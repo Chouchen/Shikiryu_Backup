@@ -1,6 +1,8 @@
 <?php
 
-class Shikiryu_Backup_Transport_Email extends Shikiryu_Backup_Transport_Abstract
+namespace Shikiryu\Backup\Transport;
+
+class Email extends TransportAbstract
 {
 
     private $to;

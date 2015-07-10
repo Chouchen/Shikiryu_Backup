@@ -1,6 +1,7 @@
 <?php
+namespace Shikiryu\Backup\Transport;
 
-class Shikiryu_Backup_Transport_Ftp extends Shikiryu_Backup_Transport_Abstract
+class Ftp extends TransportAbstract
 {
 
     private $path;

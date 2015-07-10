@@ -1,0 +1,31 @@
+[{
+  "backup": {
+    "Files": {
+      "files": [
+        "/path/to/file1",
+        "/path/to/file2"
+      ]
+    },
+    "Mysql": {
+      "host"  : "mysql address",
+      "login" : "mysql login",
+      "pwd"   : "mysql password",
+      "db"    : "mysql database"
+    }
+  },
+  "to": {
+    "Email": {
+      "to"        : "recipient@example.net;recipient2@example.net", // TODO manage more than one recipient
+      "from"      : "<name>from@example.net",
+      "encoding"  : "UTF-8",
+      "subject"   : "[Example.net] backup of the day",
+      "message"   : "Hi,\n\nYou can find your backup in this mail.\n\nRegards,\nMyself."
+    },
+    "Ftp": {
+      "host"      : "ftp.domain.com",
+      "login"     : "login",
+      "password"  : "password",
+      "folder"    : "/folder"
+    }
+  }
+}]

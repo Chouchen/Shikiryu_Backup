@@ -1,9 +1,8 @@
 <?php
 
-include_once dirname(__FILE__) . '/Transport/Email.php';
-include_once dirname(__FILE__) . '/Transport/FTP.php';
+namespace Shikiryu\Backup\Backup;
 
-class Shikiryu_Backup_Abstract
+class BackupAbstract
 {
 
     protected $_filesToBackup;
