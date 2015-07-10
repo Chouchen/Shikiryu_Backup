@@ -1,4 +1,4 @@
-[{
+{
   "backup": {
     "Files": {
       "files": [
@@ -13,9 +13,9 @@
       "db"    : "mysql database"
     }
   },
-  "to": {
+  "transport": {
     "Email": {
-      "to"        : "recipient@example.net;recipient2@example.net", // TODO manage more than one recipient
+      "to"        : "recipient@example.net;recipient2@example.net",
       "from"      : "<name>from@example.net",
       "encoding"  : "UTF-8",
       "subject"   : "[Example.net] backup of the day",
@@ -28,4 +28,4 @@
       "folder"    : "/folder"
     }
   }
-}]
+}

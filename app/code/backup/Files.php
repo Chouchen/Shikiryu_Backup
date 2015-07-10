@@ -5,11 +5,16 @@ class Files extends BackupAbstract
 {
 
     /**
-     * @param array $filesToBackup
+     * @param array $config
+     * @throws \Exception
      */
-    function __construct($filesToBackup = array())
+    function __construct($config = array())
     {
         parent::__construct();
+        if (!isset($config['files'])) {
+            throw new \Exception('Files needs a "files" configuration.');
+        }
+        $filesToBackup = $config['files'];
         if(!empty($filesToBackup) && is_array($filesToBackup)){
             $names = array_map("basename",$filesToBackup);
             $this->_filesToBackup = array_combine($filesToBackup,$names);

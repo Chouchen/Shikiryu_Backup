@@ -2,20 +2,22 @@
 
 namespace Shikiryu\Backup\Transport;
 
+use Shikiryu\Backup\Backup\BackupAbstract;
+
 class Factory
 {
     /**
-     * @param $type
-     * @param Shikiryu_Backup_Abstract $backup
      *
-     * @return bool
+     * @param BackupAbstract $backup
+     * @param array $config
+     *
+     * @return TransportAbstract|null
      */
-    public static function build(array $config)
+    public static function build(BackupAbstract $backup, array $config)
     {
-        $class = array_keys($config)[0];
+        $class = __NAMESPACE__.'\\'.array_keys($config)[0];
         if (class_exists($class)) {
-            /* @var $instance BackupAbstract */
-            return new $class(array_values($config));
+            return new $class($backup, array_values($config)[0]);
         }
         return null;
     }

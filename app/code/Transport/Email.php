@@ -2,6 +2,8 @@
 
 namespace Shikiryu\Backup\Transport;
 
+use Shikiryu\Backup\Backup\BackupAbstract;
+
 class Email extends TransportAbstract
 {
 
@@ -141,10 +143,10 @@ class Email extends TransportAbstract
     }
 
     /**
-     * @param Shikiryu_Backup_Abstract $backup
+     * @param BackupAbstract $backup
      */
-    public function __construct(Shikiryu_Backup_Abstract $backup) {
-        parent::__construct($backup);
+    public function __construct(BackupAbstract $backup, array $config) {
+        parent::__construct($backup, $config);
         $this->setFiles($this->backup->getFilesToBackup());
         $this->setStreams($this->backup->getStreamsToBackup());
         $this->to       = $this->config['to'];
@@ -233,9 +235,9 @@ class Email extends TransportAbstract
     public function send() {
 	
 		// Checking files are selected
-		$zip = new ZipArchive(); // Load zip library
+		$zip = new \ZipArchive(); // Load zip library
 		$zip_name = time().".zip"; // Zip name
-		if($zip->open(dirname(__FILE__).'/bu/'.$zip_name, ZIPARCHIVE::CREATE)==TRUE) {
+		if($zip->open(TEMP_DIR.$zip_name, \ZIPARCHIVE::CREATE)==TRUE) {
 			if(!empty($this->files)) {
                 foreach($this->files as $file)
                 {
@@ -245,7 +247,7 @@ class Email extends TransportAbstract
 			$zip->close();
 		}
 		
-		$this->files = array(dirname(__FILE__).'/bu/'.$zip_name=>dirname(__FILE__).'/bu/'.$zip_name);
+		$this->files = array(TEMP_DIR.$zip_name=>dirname(__FILE__).'/bu/'.$zip_name);
 
         $random_hash = md5(date('r', time()));
         $headers = "From: " . $this->from . "\r\nReply-To: " . $this->from;
@@ -259,8 +261,9 @@ Content-Transfer-Encoding: 8bit
 " . $this->message . "\r\n";
         
         if(!empty($this->files))
-        foreach($this->files as $file=>$name) {
-            $name = end(explode('/', $name));
+        foreach($this->files as $file => $name) {
+            $name = explode('/', $name);
+            $name = end($name);
             $output .= "
 --$random_hash
 Content-Type: " . self::getMimeType($file) . "; name=" . $name . "
