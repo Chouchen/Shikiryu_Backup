@@ -54,7 +54,7 @@ class BackupAbstract
      *
      * @return $this
      */
-    function addDate($format = 'Ymd')
+    public function addDate($format = 'Ymd')
     {
         $tmpFiles = array();
         foreach ($this->_filesToBackup as $file => $name) {
@@ -82,7 +82,7 @@ class BackupAbstract
      *
      * @return $this
      */
-    function addTime($format = 'his')
+    public function addTime($format = 'his')
     {
         $tmpFiles = array();
         foreach ($this->_filesToBackup as $file => $name) {
@@ -106,30 +106,6 @@ class BackupAbstract
     function backupToDropbox()
     {
 
-    }
-
-    /**
-     * @param $folder
-     */
-    function backupToFolder($folder)
-    {
-        if (!empty($folder)) {
-            $folder = sprintf('%s/', rtrim($folder, '/'));
-        }
-//        if($folder != '')
-//        {
-//            if(substr($folder, 0, -1) != '/')
-//                $folder .= '/';
-//        }
-        foreach ($this->_filesToBackup as $file => $name) {
-            copy($file, $folder . $name);
-        }
-        foreach ($this->_streamsToBackup as $name => $file) {
-            if (count(explode('.', $name)) < 2) {
-                $name = 'backup' . $name . '.txt';
-            }
-            file_put_contents($folder . $name, $file);
-        }
     }
 
     /**
@@ -157,10 +133,7 @@ class BackupAbstract
     /**
      * @return bool
      */
-    public function isValid()
-    {
-        return true;
-    }
+    abstract public function isValid();
 
 }
 

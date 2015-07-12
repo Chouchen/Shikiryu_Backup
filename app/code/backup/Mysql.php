@@ -90,6 +90,13 @@ class Mysql extends BackupAbstract
         return $return;
     }
 
+    /**
+     * @return bool
+     */
+    public function isValid()
+    {
+        // TODO: Implement isValid() method.
+    }
 }
 
 ?>
