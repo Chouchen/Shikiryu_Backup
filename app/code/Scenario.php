@@ -42,7 +42,11 @@ class Scenario {
     public function send()
     {
         try {
-            $this->transport->send();
+            if ($this->backup->isValid()) {
+                $this->transport->send();
+            } else {
+                throw new \Exception("Backup configuration is invalid.");
+            }
         } catch (\Exception $e) {
             throw $e;
         }

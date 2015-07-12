@@ -234,6 +234,8 @@ class Email extends TransportAbstract
      */
     public function send()
     {
+
+        // TODO check if file is empty
 	
 		// Checking files are selected
 		$zip = new \ZipArchive(); // Load zip library

@@ -10,7 +10,10 @@
       "host"  : "mysql address",
       "login" : "mysql login",
       "pwd"   : "mysql password",
-      "db"    : "mysql database"
+      "db"    : "mysql database",
+      "tables": [
+        ""
+      ]
     }
   },
   "transport": {
@@ -26,6 +29,9 @@
       "login"     : "login",
       "password"  : "password",
       "folder"    : "/folder"
+    },
+    "Folder": {
+
     }
   }
 }

@@ -8,12 +8,12 @@ class Files extends BackupAbstract
      * @param array $config
      * @throws \Exception
      */
-    function __construct($config = array())
+    public function __construct(array $config = array())
     {
-        parent::__construct();
         if (!isset($config['files'])) {
             throw new \Exception('Files needs a "files" configuration.');
         }
+        parent::__construct();
         $filesToBackup = $config['files'];
         if(!empty($filesToBackup) && is_array($filesToBackup)){
             $names = array_map("basename",$filesToBackup);
@@ -21,21 +21,17 @@ class Files extends BackupAbstract
         }
     }
 
-    /**
-     *
-     *
-     * @param string[] $filestobackup a list of file path
-     *
-     * @return $this
-     */
-    function setFilePath($filesToBackup = array())
+    public function isValid()
     {
-        if(!empty($filesToBackup) && is_array($filesToBackup))
-        {
-            $names = array_map("basename",$filesToBackup);
-            $this->_filesToBackup = array_combine($filesToBackup,$names);
+        $result = true;
+        foreach ($this->_filesToBackup as $file => $name) {
+            if (!file_exists($file)) {
+                $result = false;
+                break;
+            }
         }
-        return $this;
+        return $result;
     }
+
 }
 ?>

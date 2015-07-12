@@ -6,41 +6,23 @@ class Mysql extends BackupAbstract
 {
 
     /**
-     * @var $_pdo PDO
+     * @var $pdo \PDO
      */
-    private $_pdo;
-    private $_tables;
+    private $pdo;
+    private $tables;
+    private $host;
+    private $db;
+    private $login;
+    private $pwd;
 
     /**
-     * @param $host
-     * @param $login
-     * @param $pwd
-     * @param $db
+     * @param array $config
      */
-    public function __construct($host, $login, $pwd, $db) {
-        parent::__construct();
-        $this->_tables = array();
-        $this->_pdo = new PDO('mysql:host='.$host.';dbname='.$db, $login, $pwd);
+    public function __construct(array $config = array()) {
+        parent::__construct($config);
+        empty($this->tables) || $this->tables == '*' ? $this->everything() : $this->fromTables($this->tables);
+        $this->pdo    = new \PDO('mysql:host='.$this->host.';dbname='.$this->db, $this->login, $this->pwd);
     }
-
-    /**
-     * set the list of table to backup
-     *
-     * @param array $tables
-     *
-     * @return $this
-     */
-    public function setTables(array $tables)
-    {
-        if(is_array($tables) && !empty($tables)) {
-            $this->_tables = $tables;
-        }
-        return $this;
-    }
-    
-//    function withSQL($sql) {
-//        $statement = $this->_pdo->query($sql);
-//    }
 
     /**
      * @param array $tables
@@ -49,7 +31,7 @@ class Mysql extends BackupAbstract
     public function fromTables($tables = array())
     {
         if(!empty($tables)) {
-            $this->_tables = $tables;
+            $this->tables = $tables;
         }
         $this->_streamsToBackup[] = $this->getFromTables();
         return $this;
@@ -61,9 +43,9 @@ class Mysql extends BackupAbstract
      * @return $this
      */
     public function everything() {
-        $this->_tables = array();
-        foreach($this->_pdo->query('SHOW TABLES') as $table) {
-            $this->_tables[] = $table;
+        $this->tables = array();
+        foreach($this->pdo->query('SHOW TABLES') as $table) {
+            $this->tables[] = $table;
         }
         $this->_streamsToBackup[] = $this->getFromTables();
         return $this;
@@ -75,15 +57,15 @@ class Mysql extends BackupAbstract
     private function getFromTables()
     {
         $return = "";
-        foreach ($this->_tables as $table) {
+        foreach ($this->tables as $table) {
             if(is_array($table)) {
                 $table = $table[0];
             }
-            $result = $this->_pdo->prepare('SELECT * FROM ' . $table);
+            $result = $this->pdo->prepare('SELECT * FROM ' . $table);
             $result->execute();
             $num_fields = $result->columnCount();
             $return .= 'DROP TABLE IF EXISTS ' . $table . ';';
-            $result2 = $this->_pdo->prepare('SHOW CREATE TABLE ' . $table);
+            $result2 = $this->pdo->prepare('SHOW CREATE TABLE ' . $table);
             $result2->execute();
             $row2 = $result2->fetch();
             $return.= "\n\n" . $row2[1] . ";\n\n";

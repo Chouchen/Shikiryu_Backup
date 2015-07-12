@@ -12,6 +12,10 @@ abstract class TransportAbstract
 
     public function __construct(BackupAbstract $backup, array $config)
     {
+
+        foreach ($config as $name => $value) {
+            $this->$name = $value;
+        }
         $this->config = $config;
         $this->backup = $backup;
     }
