@@ -2,7 +2,7 @@
 
 namespace Shikiryu\Backup\Backup;
 
-class BackupAbstract
+abstract class BackupAbstract
 {
 
     protected $_filesToBackup;

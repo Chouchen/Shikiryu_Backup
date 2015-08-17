@@ -1,0 +1,19 @@
+{
+  "name": "shikiryu/backup",
+  "description": "Backup script for limited shared hosting",
+  "version": "0.0.1",
+  "authors": [
+    {
+      "name": "Shikiryu",
+      "email": "backup@desmidt.fr",
+      "homepage": "http://shikiryu.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "phpseclib/phpseclib": ">=1.0.0"
+  },
+  "autoload": {
+    "classmap": ["app/code/", "vendor/"]
+  }
+}

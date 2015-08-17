@@ -16,10 +16,11 @@ class Scenario {
 
     public static function register()
     {
-        spl_autoload_register(array(__CLASS__, 'autoload'));
+        include __DIR__.'/../../vendor/autoload.php';
+        //spl_autoload_register(array(__CLASS__, 'autoload'));
     }
 
-    public static function autoload($class)
+    /*public static function autoload($class)
     {
         if (strpos($class, __NAMESPACE__.'\\') === 0)
         {
@@ -27,7 +28,7 @@ class Scenario {
             $translated_path = str_replace('\\', '/', $relative_NS);
             require __DIR__ . '/' . $translated_path . '.php';
         }
-    }
+    }*/
 
     /**
      * @param array $scenario
