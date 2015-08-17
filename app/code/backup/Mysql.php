@@ -9,19 +9,19 @@ class Mysql extends BackupAbstract
      * @var $pdo \PDO
      */
     private $pdo;
-    private $tables;
-    private $host;
-    private $db;
-    private $login;
-    private $pwd;
+    protected $tables;
+    protected $host;
+    protected $db;
+    protected $login;
+    protected $pwd;
 
     /**
      * @param array $config
      */
     public function __construct(array $config = array()) {
         parent::__construct($config);
-        empty($this->tables) || $this->tables == '*' ? $this->everything() : $this->fromTables($this->tables);
         $this->pdo    = new \PDO('mysql:host='.$this->host.';dbname='.$this->db, $this->login, $this->pwd);
+        empty($this->tables) || $this->tables == '*' ? $this->everything() : $this->fromTables($this->tables);
     }
 
     /**
@@ -33,7 +33,7 @@ class Mysql extends BackupAbstract
         if(!empty($tables)) {
             $this->tables = $tables;
         }
-        $this->_streamsToBackup[] = $this->getFromTables();
+        $this->_streamsToBackup[sprintf('db-%s.sql', $this->db)] = $this->getFromTables();
         return $this;
     }
 
@@ -47,7 +47,7 @@ class Mysql extends BackupAbstract
         foreach($this->pdo->query('SHOW TABLES') as $table) {
             $this->tables[] = $table;
         }
-        $this->_streamsToBackup[] = $this->getFromTables();
+        $this->_streamsToBackup[sprintf('db-%s.sql', $this->db)] = $this->getFromTables();
         return $this;
     }
 
@@ -73,7 +73,7 @@ class Mysql extends BackupAbstract
                     $return.= 'INSERT INTO ' . $table . ' VALUES(';
                     for ($j = 0; $j < $num_fields; $j++) {
                         $row[$j] = addslashes($row[$j]);
-                        $row[$j] = preg_replace("\n", "\\n", $row[$j]);
+//                        $row[$j] = preg_replace("\n", "\\n", $row[$j]);
                         if (isset($row[$j])) {
                             $return.= '"' . $row[$j] . '"';
                         } else {
@@ -95,7 +95,7 @@ class Mysql extends BackupAbstract
      */
     public function isValid()
     {
-        // TODO: Implement isValid() method.
+        return !empty($this->_streamsToBackup);
     }
 }
 
