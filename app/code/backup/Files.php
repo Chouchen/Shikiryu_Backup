@@ -13,12 +13,12 @@ class Files extends BackupAbstract
         if (!isset($config['files'])) {
             throw new \Exception('Files needs a "files" configuration.');
         }
-        parent::__construct();
         $filesToBackup = $config['files'];
         if(!empty($filesToBackup) && is_array($filesToBackup)){
             $names = array_map("basename",$filesToBackup);
             $this->_filesToBackup = array_combine($filesToBackup,$names);
         }
+        parent::__construct($config);
     }
 
     public function isValid()
@@ -33,5 +33,19 @@ class Files extends BackupAbstract
         return $result;
     }
 
+    protected function preBuild()
+    {
+        // TODO: Implement preBuild() method.
+    }
+
+    protected function postBuild()
+    {
+        // TODO: Implement postBuild() method.
+    }
+
+    protected function build()
+    {
+        // TODO: Implement build() method.
+    }
 }
 ?>

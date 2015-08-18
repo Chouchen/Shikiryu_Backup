@@ -40,16 +40,20 @@ class Scenario {
         $this->transport    = TransportFactory::build($this->backup, $scenario['transport']);
     }
 
+    /**
+     * check if backup is valid and then launch the transfer
+     *
+     * @see BackupAbstract::isValid
+     * @see TransportAbstract::send
+     *
+     * @throws \Exception
+     */
     public function send()
     {
-        try {
-            if ($this->backup->isValid()) {
-                $this->transport->send();
-            } else {
-                throw new \Exception("Backup configuration is invalid.");
-            }
-        } catch (\Exception $e) {
-            throw $e;
+        if ($this->backup->isValid()) {
+            $this->transport->send();
+        } else {
+            throw new \Exception("Backup configuration is invalid.");
         }
     }
 

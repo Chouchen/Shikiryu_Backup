@@ -9,6 +9,10 @@ class Mysql extends BackupAbstract
      * @var $pdo \PDO
      */
     private $pdo;
+
+    /*
+     * from config
+     */
     protected $tables;
     protected $host;
     protected $db;
@@ -20,15 +24,13 @@ class Mysql extends BackupAbstract
      */
     public function __construct(array $config = array()) {
         parent::__construct($config);
-        $this->pdo    = new \PDO('mysql:host='.$this->host.';dbname='.$this->db, $this->login, $this->pwd);
-        empty($this->tables) || $this->tables == '*' ? $this->everything() : $this->fromTables($this->tables);
     }
 
     /**
      * @param array $tables
      * @return $this|string
      */
-    public function fromTables($tables = array())
+    private function fromTables($tables = array())
     {
         if(!empty($tables)) {
             $this->tables = $tables;
@@ -42,7 +44,7 @@ class Mysql extends BackupAbstract
      *
      * @return $this
      */
-    public function everything() {
+    private function everything() {
         $this->tables = array();
         foreach($this->pdo->query('SHOW TABLES') as $table) {
             $this->tables[] = $table;
@@ -96,6 +98,21 @@ class Mysql extends BackupAbstract
     public function isValid()
     {
         return !empty($this->_streamsToBackup);
+    }
+
+    protected function preBuild()
+    {
+        $this->pdo = new \PDO('mysql:host='.$this->host.';dbname='.$this->db, $this->login, $this->pwd);
+    }
+
+    protected function postBuild()
+    {
+        // TODO: Implement postBuild() method.
+    }
+
+    protected function build()
+    {
+        empty($this->tables) || $this->tables == '*' ? $this->everything() : $this->fromTables($this->tables);
     }
 }
 
