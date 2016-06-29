@@ -15,7 +15,7 @@ class Mysql extends BackupAbstract
      */
     protected $tables;
     protected $host;
-    protected $db;
+    protected $database;
     protected $login;
     protected $pwd;
 
@@ -35,7 +35,7 @@ class Mysql extends BackupAbstract
         if(!empty($tables)) {
             $this->tables = $tables;
         }
-        $this->_streamsToBackup[sprintf('db-%s.sql', $this->db)] = $this->getFromTables();
+        $this->_streamsToBackup[sprintf('db-%s.sql', $this->database)] = $this->getFromTables();
         return $this;
     }
 
@@ -49,7 +49,7 @@ class Mysql extends BackupAbstract
         foreach($this->pdo->query('SHOW TABLES') as $table) {
             $this->tables[] = $table;
         }
-        $this->_streamsToBackup[sprintf('db-%s.sql', $this->db)] = $this->getFromTables();
+        $this->_streamsToBackup[sprintf('db-%s.sql', $this->database)] = $this->getFromTables();
         return $this;
     }
 
@@ -71,7 +71,7 @@ class Mysql extends BackupAbstract
             $result2->execute();
             $row2 = $result2->fetch();
             $return.= "\n\n" . $row2[1] . ";\n\n";
-            foreach($result as $i=>$row){
+            foreach($result as $row){
                     $return.= 'INSERT INTO ' . $table . ' VALUES(';
                     for ($j = 0; $j < $num_fields; $j++) {
                         $row[$j] = addslashes($row[$j]);
@@ -102,7 +102,7 @@ class Mysql extends BackupAbstract
 
     protected function preBuild()
     {
-        $this->pdo = new \PDO('mysql:host='.$this->host.';dbname='.$this->db, $this->login, $this->pwd);
+        $this->pdo = new \PDO('mysql:host='.$this->host.';dbname='.$this->database, $this->login, $this->pwd);
     }
 
     protected function postBuild()

@@ -56,19 +56,19 @@ abstract class BackupAbstract
     /**
      * Check if all files got the minimum given size.
      *
-     * @param int $fs
+     * @param int $file_size
      *
      * @return bool
      */
-    public function checkMinimumFilesize($fs)
+    public function checkMinimumFilesize($file_size)
     {
         foreach ($this->_filesToBackup as $file => $name) {
-            if (filesize($file) < $fs) {
+            if (filesize($file) < $file_size) {
                 return false;
             }
         }
         foreach ($this->_streamsToBackup as $name => $file) {
-            if (mb_strlen($file, 'utf-8') < $fs) {
+            if (mb_strlen($file, 'utf-8') < $file_size) {
                 return false;
             }
         }

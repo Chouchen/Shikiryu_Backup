@@ -7,8 +7,8 @@ use Shikiryu\Backup\Backup\BackupAbstract;
 class Email extends TransportAbstract
 {
 
-    private $to;
-    private $from;
+    private $email_to;
+    private $email_from;
     private $encoding;
     private $subject;
     private $message;
@@ -149,64 +149,12 @@ class Email extends TransportAbstract
         parent::__construct($backup, $config);
         $this->setFiles($this->backup->getFilesToBackup());
         $this->setStreams($this->backup->getStreamsToBackup());
-        $this->to       = $this->config['to'];
-        $this->from     = $this->config['from'];
+        $this->email_to = $this->config['to'];
+        $this->email_from = $this->config['from'];
         $this->encoding = $this->config['encoding'];
         $this->subject  = $this->config['subject'];
         $this->message  = $this->config['message'];
         $this->encoding = $this->config['encoding'];
-    }
-
-    /**
-     * Add a recipient
-     *
-     * @param string $to
-     *
-     * @return $this
-     */
-    private function addTo($to)
-    {
-        $this->to = $to;
-        return $this;
-    }
-
-    /**
-     * Add the sender
-     *
-     * @param $from
-     *
-     * @return $this
-     */
-    private function setFrom($from)
-    {
-        $this->from = $from;
-        return $this;
-    }
-
-    /**
-     * Add the subject
-     *
-     * @param $sub
-     *
-     * @return $this
-     */
-    private function setSubject($sub)
-    {
-        $this->subject = strip_tags($sub);
-        return $this;
-    }
-
-    /**
-     * Add the message (in text)
-     *
-     * @param $mes
-     *
-     * @return $this
-     */
-    private function setMessage($mes)
-    {
-        $this->message = strip_tags($mes);
-        return $this;
     }
 
     private function setFiles($files = array())
@@ -255,7 +203,7 @@ class Email extends TransportAbstract
 		$this->files = array(TEMP_DIR.$zip_name=>$zip_name);
 
         $random_hash = md5(date('r', time()));
-        $headers = "From: " . $this->from . "\r\nReply-To: " . $this->from;
+        $headers = "From: " . $this->email_from . "\r\nReply-To: " . $this->email_from;
         $headers .= "\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"" . $random_hash . "\"";
         $output = "
 
@@ -288,7 +236,7 @@ Content-Disposition: attachment; filename=" . $name . "
 " . chunk_split(base64_encode($stream));
         }
         $output.="--$random_hash--";
-        return mail($this->to, $this->subject, $output, $headers);
+        return mail($this->email_to, $this->subject, $output, $headers);
     }
 
 }
