@@ -18,16 +18,25 @@ class Folder extends BackupAbstract
         // TODO: Implement isValid() method.
     }
 
+	/**
+	 * Function that can be used to initialize the backup
+	 */
     protected function preBuild()
     {
         // TODO: Implement preBuild() method.
     }
 
+	 /**
+	 * Function that can be used after the backup
+	 */
     protected function postBuild()
     {
         // TODO: Implement postBuild() method.
     }
 
+	/**
+	 * Mandatory function doing the backup
+	 */
     protected function build()
     {
         // TODO: Implement build() method.

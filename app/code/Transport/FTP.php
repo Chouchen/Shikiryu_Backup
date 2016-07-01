@@ -51,6 +51,9 @@ class Ftp extends TransportAbstract
         return $this;
     }
     
+    /**
+     * @return bool
+     */
     public function send()
     {
         $sent = true;
@@ -82,6 +85,8 @@ class Ftp extends TransportAbstract
         if (!$sent) {
             throw new \Exception('At least an upload didnt work.');
         }
+        
+        return $sent;
     }
     
     public function __destruct()

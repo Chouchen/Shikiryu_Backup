@@ -21,6 +21,13 @@ class Files extends BackupAbstract
         parent::__construct($config);
     }
 
+	/**
+	 * Check if the backup is valid
+	 * 
+	 * @return bool
+	 * 
+	 * @SuppressWarnings("unused")
+	 */
     public function isValid()
     {
         $result = true;
@@ -32,17 +39,26 @@ class Files extends BackupAbstract
         }
         return $result;
     }
-
+	
+	/**
+	 * Function that can be used to initialize the backup
+	 */
     protected function preBuild()
     {
         // TODO: Implement preBuild() method.
     }
 
+	 /**
+	 * Function that can be used after the backup
+	 */
     protected function postBuild()
     {
         // TODO: Implement postBuild() method.
     }
 
+	/**
+	 * Mandatory function doing the backup
+	 */
     protected function build()
     {
         // TODO: Implement build() method.

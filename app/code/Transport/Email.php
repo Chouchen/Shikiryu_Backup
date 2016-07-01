@@ -157,6 +157,11 @@ class Email extends TransportAbstract
         $this->encoding = $this->config['encoding'];
     }
 
+	/**
+	 * @param array $files
+	 * 
+	 * @return $this
+	 */ 
     private function setFiles($files = array())
     {
         if (is_array($files) && !empty($files)) {
@@ -165,6 +170,11 @@ class Email extends TransportAbstract
         return $this;
     }
 
+	/**
+	 * @param array $streams
+	 * 
+	 * @return $this
+	 */ 
     private function setStreams($streams = array())
     {
         if (is_array($streams) && !empty($streams)) {
@@ -240,5 +250,3 @@ Content-Disposition: attachment; filename=" . $name . "
     }
 
 }
-
-?>

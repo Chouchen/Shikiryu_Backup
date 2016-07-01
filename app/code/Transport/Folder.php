@@ -7,7 +7,7 @@ use Shikiryu\Backup\Backup\BackupAbstract;
 
 class Folder extends TransportAbstract
 {
-
+	/** @var string */
     protected $folder;
 
     public function __construct(BackupAbstract $backup, array $config = array())
@@ -21,6 +21,7 @@ class Folder extends TransportAbstract
 
     /**
      * @return bool
+     * 
      * @throws \Exception
      */
     public function send()

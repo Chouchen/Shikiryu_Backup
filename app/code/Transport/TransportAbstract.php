@@ -7,7 +7,9 @@ use Shikiryu\Backup\Backup\BackupAbstract;
 abstract class TransportAbstract
 {
 
+	/** @var BackupAbstract */
     protected $backup;
+    /** @var array */
     protected $config;
 
     public function __construct(BackupAbstract $backup, array $config)

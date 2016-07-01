@@ -6,13 +6,17 @@ use phpseclib\Net\SFTP as LibSFTP;
 
 class Sftp extends TransportAbstract
 {
-
+	/** @var string */
     protected $host;
+    /** @var int */
     protected $port = 22;
+    /** @var string */
     protected $login;
+    /** @var string */
     protected $password;
+    /** @var string */
     protected $folder;
-
+	/** @var LibSFTP */
     private $connection;
 
     /**
@@ -32,6 +36,7 @@ class Sftp extends TransportAbstract
 
     /**
      * @return bool
+     * 
      * @throws \Exception
      */
     public function send()

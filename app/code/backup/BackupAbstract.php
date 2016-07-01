@@ -4,7 +4,7 @@ namespace Shikiryu\Backup\Backup;
 
 abstract class BackupAbstract
 {
-
+	/** @var array */
     protected $options;
     /** @var string[] */
     protected $_filesToBackup = [];
@@ -75,6 +75,9 @@ abstract class BackupAbstract
         return true;
     }
 
+	/**
+	 * Initialize everything
+	 */
     protected function init()
     {
         $this->preBuild();
@@ -82,10 +85,24 @@ abstract class BackupAbstract
         $this->postBuild();
         $this->applyOptions();
     }
-
+	
+	/**
+	 * Function that can be used to initialize the backup
+	 */
     abstract protected function preBuild();
+    /**
+	 * Function that can be used after the backup
+	 */
     abstract protected function postBuild();
+    /**
+	 * Mandatory function doing the backup
+	 */
     abstract protected function build();
+    /**
+	 * Check if the backup is valid
+	 * 
+	 * @return bool
+	 */
     abstract public function isValid();
 
     /**
@@ -204,7 +221,10 @@ abstract class BackupAbstract
 
     /**
      * @param $name
+     * 
      * @throws \Exception
+     * 
+     * @SuppressWarnings("unused")
      */
     protected function setOptionName($name)
     {
@@ -214,5 +234,3 @@ abstract class BackupAbstract
     }
 
 }
-
-?>

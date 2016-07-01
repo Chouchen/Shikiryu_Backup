@@ -100,16 +100,25 @@ class Mysql extends BackupAbstract
         return !empty($this->_streamsToBackup);
     }
 
+	/**
+	 * Function that can be used to initialize the backup
+	 */
     protected function preBuild()
     {
         $this->pdo = new \PDO('mysql:host='.$this->host.';dbname='.$this->database, $this->login, $this->pwd);
     }
 
+	 /**
+	 * Function that can be used after the backup
+	 */
     protected function postBuild()
     {
         // TODO: Implement postBuild() method.
     }
 
+	/**
+	 * Mandatory function doing the backup
+	 */
     protected function build()
     {
         empty($this->tables) || $this->tables == '*' ? $this->everything() : $this->fromTables($this->tables);
