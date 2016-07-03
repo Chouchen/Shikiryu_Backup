@@ -6,7 +6,7 @@ use phpseclib\Net\SFTP as LibSFTP;
 
 class Sftp extends TransportAbstract
 {
-	/** @var string */
+    /** @var string */
     protected $host;
     /** @var int */
     protected $port = 22;
@@ -16,7 +16,7 @@ class Sftp extends TransportAbstract
     protected $password;
     /** @var string */
     protected $folder;
-	/** @var LibSFTP */
+    /** @var LibSFTP */
     private $connection;
 
     /**
@@ -36,29 +36,29 @@ class Sftp extends TransportAbstract
 
     /**
      * @return bool
-     * 
+     *
      * @throws \Exception
      */
     public function send()
     {
         $sent = true;
-        $files = $this->backup->getFilesToBackup();
-        if (!empty($files)){
+        $files = $this->backup->getFilesTobackup();
+        if (!empty($files)) {
             foreach ($files as $file => $name) {
                 $upload = $this->connection->put($this->folder.'/'.$name, $file, LibSFTP::SOURCE_LOCAL_FILE);
                 if (!$upload) {
                     $sent = false;
-                    echo 'SFTP upload manquée de '.$file.' vers '.$this->folder.$name;
+                    echo 'SFTP upload manquï¿½e de '.$file.' vers '.$this->folder.$name;
                 }
             }
         }
 
-        $streams = $this->backup->getStreamsToBackup();
-        if (!empty($streams)){
+        $streams = $this->backup->getStreamsTobackup();
+        if (!empty($streams)) {
             foreach ($streams as $name => $stream) {
                 $upload = $this->connection->put($this->folder.'/'.$name, $stream);
                 if (!$upload) {
-                    echo 'SFTP upload manquée de '.$name.' vers '.$this->folder.$name;
+                    echo 'SFTP upload manquï¿½e de '.$name.' vers '.$this->folder.$name;
                     $sent = false;
                 }
             }

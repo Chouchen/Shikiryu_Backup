@@ -147,8 +147,8 @@ class Email extends TransportAbstract
      */
     public function __construct(BackupAbstract $backup, array $config) {
         parent::__construct($backup, $config);
-        $this->setFiles($this->backup->getFilesToBackup());
-        $this->setStreams($this->backup->getStreamsToBackup());
+        $this->setFiles($this->backup->getFilesTobackup());
+        $this->setStreams($this->backup->getStreamsTobackup());
         $this->email_to = $this->config['to'];
         $this->email_from = $this->config['from'];
         $this->encoding = $this->config['encoding'];

@@ -7,7 +7,11 @@ use Shikiryu\Backup\Transport\TransportAbstract;
 
 class Dropbox extends TransportAbstract
 {
-
+    /**
+     * Dropbox Client
+     *
+     * @var Client
+     */
     private $dropbox;
 
     protected $token    = '';
@@ -26,21 +30,21 @@ class Dropbox extends TransportAbstract
     public function send()
     {
         $sent = true;
-        $files = $this->backup->getFilesToBackup();
+        $files = $this->backup->getFilesTobackup();
         foreach ($files as $file => $name) {
             $file = fopen($file, 'r');
             $upload = $this->dropbox->uploadFile($this->folder.'/'.$name, \Dropbox\WriteMode::force(), $file);
             if (!$upload) {
                 $sent = false;
-                echo 'DROPBOX upload manquée de '.$file.' vers '.$this->folder.$name;
+                echo 'DROPBOX upload manquï¿½e de '.$file.' vers '.$this->folder.$name;
             }
         }
-        $streams = $this->backup->getStreamsToBackup();
+        $streams = $this->backup->getStreamsTobackup();
         foreach ($streams as $stream => $name) {
             $upload = $this->dropbox->uploadFileFromString($this->folder.'/'.$name, \Dropbox\WriteMode::force(), $stream);
             if (!$upload) {
                 $sent = false;
-                echo 'DROPBOX upload manquée de '.$file.' vers '.$this->folder.$name;
+                echo 'DROPBOX upload manquï¿½e de '.$file.' vers '.$this->folder.$name;
             }
         }
         return $sent;

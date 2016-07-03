@@ -16,7 +16,7 @@ class Files extends BackupAbstract
         $filesToBackup = $config['files'];
         if(!empty($filesToBackup) && is_array($filesToBackup)){
             $names = array_map("basename",$filesToBackup);
-            $this->_filesToBackup = array_combine($filesToBackup,$names);
+            $this->files_to_backup = array_combine($filesToBackup,$names);
         }
         parent::__construct($config);
     }
@@ -31,7 +31,7 @@ class Files extends BackupAbstract
     public function isValid()
     {
         $result = true;
-        foreach ($this->_filesToBackup as $file => $name) {
+        foreach ($this->files_to_backup as $file => $name) {
             if (!file_exists($file)) {
                 $result = false;
                 break;

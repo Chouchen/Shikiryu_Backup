@@ -7,7 +7,7 @@ use Shikiryu\Backup\Backup\BackupAbstract;
 abstract class TransportAbstract
 {
 
-	/** @var BackupAbstract */
+    /** @var BackupAbstract */
     protected $backup;
     /** @var array */
     protected $config;
@@ -25,5 +25,5 @@ abstract class TransportAbstract
     /**
      * @return bool
      */
-    public abstract function send();
+    abstract public function send();
 }

@@ -4,15 +4,29 @@ namespace Shikiryu\Backup\Backup;
 
 abstract class BackupAbstract
 {
-	/** @var array */
+    /**
+     * Options
+     *
+     * @var array
+     */
     protected $options;
-    /** @var string[] */
-    protected $_filesToBackup = [];
-    /** @var string[] */
-    protected $_streamsToBackup = [];
+    /**
+     * File path to backup
+     *
+     * @var string[]
+     */
+    protected $files_to_backup = [];
+    /**
+     * Streams to backup
+     *
+     * @var string[]
+     */
+    protected $streams_to_backup = [];
 
     /**
-     * @param array $config
+     * Constructor
+     *
+     * @param array $config array of options and parameters
      */
     function __construct($config = array())
     {
@@ -29,45 +43,53 @@ abstract class BackupAbstract
     /**
      * Magic setter method
      *
-     * @param $name
-     * @param $value
+     * @param string $name  attribute name
+     * @param mixed  $value attribute value
+     * 
+     * @return $this
      */
     public function __set($name, $value)
     {
         $this->$name = $value;
+        
+        return $this;
     }
 
     /**
+     * Getter
+     *
      * @return array
      */
     public function getFilesToBackup()
     {
-        return $this->_filesToBackup;
+        return $this->files_to_backup;
     }
 
     /**
+     * Getter
+     *
      * @return array
      */
     public function getStreamsToBackup()
     {
-        return $this->_streamsToBackup;
+        return $this->streams_to_backup;
     }
 
     /**
      * Check if all files got the minimum given size.
      *
-     * @param int $file_size
+     * @param int $file_size file size
      *
      * @return bool
      */
     public function checkMinimumFilesize($file_size)
     {
-        foreach ($this->_filesToBackup as $file => $name) {
+        foreach ($this->files_to_backup as $file => $name) {
             if (filesize($file) < $file_size) {
                 return false;
             }
         }
-        foreach ($this->_streamsToBackup as $name => $file) {
+        foreach ($this->streams_to_backup as $name => $file) {
             if (mb_strlen($file, 'utf-8') < $file_size) {
                 return false;
             }
@@ -75,44 +97,58 @@ abstract class BackupAbstract
         return true;
     }
 
-	/**
-	 * Initialize everything
-	 */
+    /**
+     * Initialize everything
+     * 
+     * @return $this
+     */
     protected function init()
     {
         $this->preBuild();
         $this->build();
         $this->postBuild();
         $this->applyOptions();
+        
+        return $this;
     }
-	
-	/**
-	 * Function that can be used to initialize the backup
-	 */
+
+    /**
+     * Function that can be used to initialize the backup
+     * 
+     * @return void
+     */
     abstract protected function preBuild();
+
     /**
-	 * Function that can be used after the backup
-	 */
+     * Function that can be used after the backup
+     * 
+     * @return void
+     */
     abstract protected function postBuild();
+
     /**
-	 * Mandatory function doing the backup
-	 */
+     * Mandatory function doing the backup
+     * 
+     * @return void
+     */
     abstract protected function build();
+
     /**
-	 * Check if the backup is valid
-	 * 
-	 * @return bool
-	 */
+     * Check if the backup is valid
+     *
+     * @return bool
+     */
     abstract public function isValid();
 
     /**
+     * Apply options
+     * 
      * @return $this
      */
     protected function applyOptions()
     {
         // TODO isValid here ?
-        foreach($this->options as $name => $value)
-        {
+        foreach ($this->options as $name => $value) {
             $method = sprintf('setOption%s', ucfirst($name));
             if (method_exists($this, $method)) {
                 call_user_func([$this, $method], $value);
@@ -132,18 +168,18 @@ abstract class BackupAbstract
     protected function setOptionZip()
     {
         $zip = new \ZipArchive();
-        $zip_name = sprintf('%s.zip', (!empty($this->options['name']) ? $this->options['name'] : time())); // Zip name
-        if (touch(TEMP_DIR.$zip_name) === false) {
+        // Zip name
+        $zip_name = !empty($this->options['name']) ? $this->options['name'] : time();
+        $zip_name = sprintf('%s.zip', $zip_name);
+        if (touch(TEMP_DIR . $zip_name) === false) {
             throw new \Exception('Backup::Zip::Permission denied.');
         }
-        if ($zip->open(TEMP_DIR.$zip_name, \ZIPARCHIVE::OVERWRITE)==TRUE) {
-            foreach($this->_filesToBackup as $file => $name)
-            {
+        if ($zip->open(TEMP_DIR . $zip_name, \ZipArchive::OVERWRITE) == TRUE) {
+            foreach ($this->files_to_backup as $file => $name) {
                 $zip->addFile($file, $name); // Adding files into zip
             }
 
-            foreach($this->_streamsToBackup as $file => $name)
-            {
+            foreach ($this->streams_to_backup as $file => $name) {
                 $zip->addFromString($file, $name); // Adding streams into zip
             }
             $zip->close();
@@ -151,8 +187,8 @@ abstract class BackupAbstract
             throw new \Exception('Backup::Zip::Can\'t zip the given backup.');
         }
 
-        $this->_filesToBackup   = [TEMP_DIR.$zip_name => $zip_name];
-        $this->_streamsToBackup = [];
+        $this->files_to_backup = [TEMP_DIR . $zip_name => $zip_name];
+        $this->streams_to_backup = [];
 
         return $this;
     }
@@ -160,7 +196,7 @@ abstract class BackupAbstract
     /**
      * Add the current date with the given format into the files names
      *
-     * @param string $format
+     * @param string $format date format
      *
      * @return $this
      */
@@ -170,20 +206,20 @@ abstract class BackupAbstract
             $format = 'Ymd';
         }
         $tmpFiles = array();
-        foreach ($this->_filesToBackup as $file => $name) {
+        foreach ($this->files_to_backup as $file => $name) {
             $nameA = explode('.', $name);
             $nameA[] = end($nameA);
             $nameA[count($nameA) - 2] = date($format);
             $name = implode('.', $nameA);
             $tmpFiles[$file] = $name;
         }
-        $this->_filesToBackup = $tmpFiles;
+        $this->files_to_backup = $tmpFiles;
 
         $tmpStream = array();
-        foreach ($this->_streamsToBackup as $name => $stream) {
+        foreach ($this->streams_to_backup as $name => $stream) {
             $tmpStream[$name . '-' . date($format)] = $stream;
         }
-        $this->_streamsToBackup = $tmpStream;
+        $this->streams_to_backup = $tmpStream;
 
         return $this;
     }
@@ -191,7 +227,7 @@ abstract class BackupAbstract
     /**
      * Add the current time with the given format into the files names
      *
-     * @param string $format
+     * @param string $format time format
      *
      * @return $this
      */
@@ -201,29 +237,31 @@ abstract class BackupAbstract
             $format = 'his';
         }
         $tmpFiles = array();
-        foreach ($this->_filesToBackup as $file => $name) {
+        foreach ($this->files_to_backup as $file => $name) {
             $nameA = explode('.', $name);
             $nameA[] = end($nameA);
             $nameA[count($nameA) - 2] = date($format);
             $name = implode('.', $nameA);
             $tmpFiles[$file] = $name;
         }
-        $this->_filesToBackup = $tmpFiles;
+        $this->files_to_backup = $tmpFiles;
 
         $tmpStream = array();
-        foreach ($this->_streamsToBackup as $name => $stream) {
+        foreach ($this->streams_to_backup as $name => $stream) {
             $tmpStream[$name . '-' . date($format)] = $stream;
         }
-        $this->_streamsToBackup = $tmpStream;
+        $this->streams_to_backup = $tmpStream;
 
         return $this;
     }
 
     /**
-     * @param $name
+     * Set option name
      * 
+     * @param mixed $name option's name
+     *
      * @throws \Exception
-     * 
+     *
      * @SuppressWarnings("unused")
      */
     protected function setOptionName($name)

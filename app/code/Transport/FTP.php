@@ -1,4 +1,5 @@
 <?php
+
 namespace Shikiryu\Backup\Transport;
 
 class Ftp extends TransportAbstract
@@ -14,12 +15,13 @@ class Ftp extends TransportAbstract
     private $files;
     private $streams;
 
-    public function __construct($backup, $config) {
+    public function __construct($backup, $config)
+    {
         parent::__construct($backup, $config);
 
 //        $this->path = $this->config['path'];
         if (!empty($this->folder)) {
-            $this->folder = sprintf('/%s/', ltrim(rtrim($this->folder, '/'),'/'));
+            $this->folder = sprintf('/%s/', ltrim(rtrim($this->folder, '/'), '/'));
         }
 
         $this->connection = ftp_connect($this->host);
@@ -29,13 +31,14 @@ class Ftp extends TransportAbstract
 
         $login = @ftp_login($this->connection, $this->login, $this->password);
         if ($login === false) {
-            throw new \Exception(sprintf('Connexion FTP %s refusée avec %s et %s', $this->host, $this->login, $this->password));
+            $msg = sprintf('Connexion FTP %s refusée avec %s et %s', $this->host, $this->login, $this->password);
+            throw new \Exception($msg);
         }
 
-        $this->setFiles($this->backup->getFilesToBackup());
-        $this->setStreams($this->backup->getStreamsToBackup());
+        $this->setFiles($this->backup->getFilesTobackup());
+        $this->setStreams($this->backup->getStreamsTobackup());
     }
-    
+
     private function setFiles($files = array())
     {
         if (is_array($files) && !empty($files)) {
@@ -44,13 +47,14 @@ class Ftp extends TransportAbstract
         return $this;
     }
 
-    private function setStreams($streams = array()) {
+    private function setStreams($streams = array())
+    {
         if (is_array($streams) && !empty($streams)) {
             $this->streams = $streams;
         }
         return $this;
     }
-    
+
     /**
      * @return bool
      */
@@ -58,7 +62,7 @@ class Ftp extends TransportAbstract
     {
         $sent = true;
         ftp_pasv($this->connection, true);
-        if (!empty($this->files)){
+        if (!empty($this->files)) {
             foreach ($this->files as $file => $name) {
                 $upload = ftp_put($this->connection, $this->folder.$name, $file, FTP_BINARY);
                 if (!$upload) {
@@ -67,11 +71,12 @@ class Ftp extends TransportAbstract
                 }
             }
         }
-        
-        if (!empty($this->streams)){
+
+        if (!empty($this->streams)) {
             foreach ($this->streams as $name => $stream) {
-                if (count(explode('.', $name)) < 2)
+                if (count(explode('.', $name)) < 2) {
                     $name = 'backup' . $name . '.txt';
+                }
                 file_put_contents($name, $stream);
                 $upload = ftp_put($this->connection, $this->folder.$name, $name, FTP_ASCII);
                 if (!$upload) {
@@ -85,23 +90,12 @@ class Ftp extends TransportAbstract
         if (!$sent) {
             throw new \Exception('At least an upload didnt work.');
         }
-        
+
         return $sent;
     }
-    
+
     public function __destruct()
     {
         ftp_close($this->connection);
     }
-
-    
-
-        
-
-        
-
-        
-
-        
 }
-?>

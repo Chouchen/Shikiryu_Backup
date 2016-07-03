@@ -7,7 +7,8 @@ use Shikiryu\Backup\Transport\TransportAbstract;
 use Shikiryu\Backup\Backup\Factory as BackupFactory;
 use Shikiryu\Backup\Transport\Factory as TransportFactory;
 
-class Scenario {
+class Scenario
+{
 
     /* @var $backup BackupAbstract */
     private $backup;
@@ -103,5 +104,4 @@ class Scenario {
             isset($scenario['transport']) &&
             count($scenario['transport']) === 1;
     }
-
 }
