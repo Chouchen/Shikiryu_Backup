@@ -28,7 +28,7 @@ abstract class BackupAbstract
      *
      * @param array $config array of options and parameters
      */
-    function __construct($config = array())
+    public function __construct($config = array())
     {
 
         $this->options = !empty($config['options']) ? $config['options'] : [];
@@ -45,7 +45,7 @@ abstract class BackupAbstract
      *
      * @param string $name  attribute name
      * @param mixed  $value attribute value
-     * 
+     *
      * @return $this
      */
     public function __set($name, $value)
@@ -99,7 +99,7 @@ abstract class BackupAbstract
 
     /**
      * Initialize everything
-     * 
+     *
      * @return $this
      */
     protected function init()
@@ -114,21 +114,21 @@ abstract class BackupAbstract
 
     /**
      * Function that can be used to initialize the backup
-     * 
+     *
      * @return void
      */
     abstract protected function preBuild();
 
     /**
      * Function that can be used after the backup
-     * 
+     *
      * @return void
      */
     abstract protected function postBuild();
 
     /**
      * Mandatory function doing the backup
-     * 
+     *
      * @return void
      */
     abstract protected function build();
@@ -142,7 +142,7 @@ abstract class BackupAbstract
 
     /**
      * Apply options
-     * 
+     *
      * @return $this
      */
     protected function applyOptions()
@@ -174,7 +174,7 @@ abstract class BackupAbstract
         if (touch(TEMP_DIR . $zip_name) === false) {
             throw new \Exception('Backup::Zip::Permission denied.');
         }
-        if ($zip->open(TEMP_DIR . $zip_name, \ZipArchive::OVERWRITE) == TRUE) {
+        if ($zip->open(TEMP_DIR . $zip_name, \ZipArchive::OVERWRITE) == true) {
             foreach ($this->files_to_backup as $file => $name) {
                 $zip->addFile($file, $name); // Adding files into zip
             }
@@ -257,7 +257,7 @@ abstract class BackupAbstract
 
     /**
      * Set option name
-     * 
+     *
      * @param mixed $name option's name
      *
      * @throws \Exception
@@ -270,5 +270,4 @@ abstract class BackupAbstract
             throw new \Exception('name option is for zip only.');
         }
     }
-
 }

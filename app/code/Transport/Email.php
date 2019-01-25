@@ -125,7 +125,8 @@ class Email extends TransportAbstract
      *
      * @return string
      */
-    public static function getMimeType($file) {
+    public static function getMimeType($file)
+    {
         if (function_exists('finfo_open')) {
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $type = (string) finfo_file($finfo, $file);
@@ -135,17 +136,19 @@ class Email extends TransportAbstract
             return mime_content_type($file);
         } else {
             $ext = strtolower(array_pop(explode('.', $file)));
-            if (array_key_exists($ext, self::$mimeTypes))
+            if (array_key_exists($ext, self::$mimeTypes)) {
                 return self::$mimeTypes[$ext];
-            else
+            } else {
                 return 'application/octet-stream';
+            }
         }
     }
 
     /**
      * @param BackupAbstract $backup
      */
-    public function __construct(BackupAbstract $backup, array $config) {
+    public function __construct(BackupAbstract $backup, array $config)
+    {
         parent::__construct($backup, $config);
         $this->setFiles($this->backup->getFilesTobackup());
         $this->setStreams($this->backup->getStreamsTobackup());
@@ -157,11 +160,11 @@ class Email extends TransportAbstract
         $this->encoding = $this->config['encoding'];
     }
 
-	/**
-	 * @param array $files
-	 * 
-	 * @return $this
-	 */ 
+    /**
+     * @param array $files
+     *
+     * @return $this
+     */
     private function setFiles($files = array())
     {
         if (is_array($files) && !empty($files)) {
@@ -170,11 +173,11 @@ class Email extends TransportAbstract
         return $this;
     }
 
-	/**
-	 * @param array $streams
-	 * 
-	 * @return $this
-	 */ 
+    /**
+     * @param array $streams
+     *
+     * @return $this
+     */
     private function setStreams($streams = array())
     {
         if (is_array($streams) && !empty($streams)) {
@@ -194,23 +197,22 @@ class Email extends TransportAbstract
     {
 
         // TODO check if file is empty
-	
-		// Checking files are selected
-		$zip = new \ZipArchive(); // Load zip library
-		$zip_name = time().".zip"; // Zip name
-		if ($zip->open(TEMP_DIR.$zip_name, \ZIPARCHIVE::CREATE)==TRUE) {
-			if(!empty($this->files)) {
-                foreach($this->files as $file => $name)
-                {
+    
+        // Checking files are selected
+        $zip = new \ZipArchive(); // Load zip library
+        $zip_name = time().".zip"; // Zip name
+        if ($zip->open(TEMP_DIR.$zip_name, \ZIPARCHIVE::CREATE)==true) {
+            if (!empty($this->files)) {
+                foreach ($this->files as $file => $name) {
                     $zip->addFile($file, $name); // Adding files into zip
                 }
             }
-			$zip->close();
-		} else {
+            $zip->close();
+        } else {
             throw new \Exception('Transport::Email::Can\'t zip the given backup.');
         }
-		
-		$this->files = array(TEMP_DIR.$zip_name=>$zip_name);
+        
+        $this->files = array(TEMP_DIR.$zip_name=>$zip_name);
 
         $random_hash = md5(date('r', time()));
         $headers = "From: " . $this->email_from . "\r\nReply-To: " . $this->email_from;
@@ -223,30 +225,33 @@ Content-Transfer-Encoding: 8bit
  
 " . $this->message . "\r\n";
         
-        if(!empty($this->files))
-        foreach($this->files as $file => $name) {
-            $output .= "
+        if (!empty($this->files)) {
+            foreach ($this->files as $file => $name) {
+                $output .= "
 --$random_hash
 Content-Type: " . self::getMimeType($file) . "; name=" . $name . "
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename=" . $name . "
  
 " . chunk_split(base64_encode(file_get_contents($file)));
+            }
         }
         
-        if(!empty($this->streams))
-        foreach($this->streams as $name=>$stream) {
-            if(count(explode('.',$name))<2) $name = 'backup'.$name.'.txt';
-            $output .= "
+        if (!empty($this->streams)) {
+            foreach ($this->streams as $name => $stream) {
+                if (count(explode('.', $name))<2) {
+                    $name = 'backup'.$name.'.txt';
+                }
+                $output .= "
 --$random_hash
 Content-Type: text/plain; name=" . $name . "
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename=" . $name . "
  
 " . chunk_split(base64_encode($stream));
+            }
         }
         $output.="--$random_hash--";
         return mail($this->email_to, $this->subject, $output, $headers);
     }
-
 }
