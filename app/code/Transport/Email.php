@@ -132,16 +132,19 @@ class Email extends TransportAbstract
             $type = (string) finfo_file($finfo, $file);
             finfo_close($finfo);
             return $type;
-        } else if (function_exists('mime_content_type')) {
-            return mime_content_type($file);
-        } else {
-            $ext = strtolower(array_pop(explode('.', $file)));
-            if (array_key_exists($ext, self::$mimeTypes)) {
-                return self::$mimeTypes[$ext];
-            } else {
-                return 'application/octet-stream';
-            }
         }
+
+        if (function_exists('mime_content_type')) {
+            return mime_content_type($file);
+        }
+
+        $file_info = explode('.', $file);
+        $ext = strtolower(array_pop($file_info));
+        if (array_key_exists($ext, self::$mimeTypes)) {
+            return self::$mimeTypes[$ext];
+        }
+
+        return 'application/octet-stream';
     }
 
     /**
@@ -150,8 +153,8 @@ class Email extends TransportAbstract
     public function __construct(BackupAbstract $backup, array $config)
     {
         parent::__construct($backup, $config);
-        $this->setFiles($this->backup->getFilesTobackup());
-        $this->setStreams($this->backup->getStreamsTobackup());
+        $this->setFiles($this->backup->getFilesToBackup());
+        $this->setStreams($this->backup->getStreamsToBackup());
         $this->email_to = $this->config['to'];
         $this->email_from = $this->config['from'];
         $this->encoding = $this->config['encoding'];
@@ -200,8 +203,8 @@ class Email extends TransportAbstract
     
         // Checking files are selected
         $zip = new \ZipArchive(); // Load zip library
-        $zip_name = time().".zip"; // Zip name
-        if ($zip->open(TEMP_DIR.$zip_name, \ZIPARCHIVE::CREATE)==true) {
+        $zip_name = time(). '.zip'; // Zip name
+        if ($zip->open(TEMP_DIR.$zip_name, \ZIPARCHIVE::CREATE)===true) {
             if (!empty($this->files)) {
                 foreach ($this->files as $file => $name) {
                     $zip->addFile($file, $name); // Adding files into zip
@@ -214,9 +217,9 @@ class Email extends TransportAbstract
         
         $this->files = array(TEMP_DIR.$zip_name=>$zip_name);
 
-        $random_hash = md5(date('r', time()));
-        $headers = "From: " . $this->email_from . "\r\nReply-To: " . $this->email_from;
-        $headers .= "\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"" . $random_hash . "\"";
+        $random_hash = md5(date('r'));
+        $headers = 'From: ' . $this->email_from . "\r\nReply-To: " . $this->email_from;
+        $headers .= "\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"" . $random_hash . '"';
         $output = "
 
 --$random_hash
@@ -229,26 +232,26 @@ Content-Transfer-Encoding: 8bit
             foreach ($this->files as $file => $name) {
                 $output .= "
 --$random_hash
-Content-Type: " . self::getMimeType($file) . "; name=" . $name . "
+Content-Type: " . self::getMimeType($file) . '; name=' . $name . '
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename=" . $name . "
+Content-Disposition: attachment; filename=' . $name . '
  
-" . chunk_split(base64_encode(file_get_contents($file)));
+' . chunk_split(base64_encode(file_get_contents($file)));
             }
         }
         
         if (!empty($this->streams)) {
             foreach ($this->streams as $name => $stream) {
-                if (count(explode('.', $name))<2) {
+                if (substr_count($name, '.') + 1 <2) {
                     $name = 'backup'.$name.'.txt';
                 }
                 $output .= "
 --$random_hash
-Content-Type: text/plain; name=" . $name . "
+Content-Type: text/plain; name=" . $name . '
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename=" . $name . "
+Content-Disposition: attachment; filename=' . $name . '
  
-" . chunk_split(base64_encode($stream));
+' . chunk_split(base64_encode($stream));
             }
         }
         $output.="--$random_hash--";

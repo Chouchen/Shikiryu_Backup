@@ -60,17 +60,15 @@ class Mysql extends BackupAbstract
     */
     private function getFromTables()
     {
-        $return = "";
+        $return = '';
         foreach ($this->tables as $table) {
             if (is_array($table)) {
                 $table = $table[0];
             }
-            $result = $this->pdo->prepare('SELECT * FROM ' . $table);
-            $result->execute();
+            $result = $this->pdo->query('SELECT * FROM ' . $table);
             $num_fields = $result->columnCount();
             $return .= 'DROP TABLE IF EXISTS ' . $table . ';';
-            $result2 = $this->pdo->prepare('SHOW CREATE TABLE ' . $table);
-            $result2->execute();
+            $result2 = $this->pdo->query('SHOW CREATE TABLE ' . $table);
             $row2 = $result2->fetch();
             $return.= "\n\n" . $row2[1] . ";\n\n";
             foreach ($result as $row) {
@@ -123,6 +121,6 @@ class Mysql extends BackupAbstract
     */
     protected function build()
     {
-        empty($this->tables) || $this->tables == '*' ? $this->everything() : $this->fromTables($this->tables);
+        empty($this->tables) || $this->tables === '*' ? $this->everything() : $this->fromTables($this->tables);
     }
 }

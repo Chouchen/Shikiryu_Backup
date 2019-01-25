@@ -15,7 +15,7 @@ class Files extends BackupAbstract
         }
         $filesToBackup = $config['files'];
         if (!empty($filesToBackup) && is_array($filesToBackup)) {
-            $names = array_map("basename", $filesToBackup);
+            $names = array_map('basename', $filesToBackup);
             $this->files_to_backup = array_combine($filesToBackup, $names);
         }
         parent::__construct($config);

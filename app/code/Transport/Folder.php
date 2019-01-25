@@ -29,13 +29,13 @@ class Folder extends TransportAbstract
     */
     public function send()
     {
-        foreach ($this->backup->getFilesTobackup() as $file => $name) {
+        foreach ($this->backup->getFilesToBackup() as $file => $name) {
             if (copy($file, $this->folder . $name) === false) {
                 throw new \Exception(sprintf('Copy of %s in %s failed', $name, $this->folder));
             };
         }
-        foreach ($this->backup->getStreamsTobackup() as $name => $file) {
-            if (count(explode('.', $name)) < 2) {
+        foreach ($this->backup->getStreamsToBackup() as $name => $file) {
+            if (substr_count($name, '.') + 1 < 2) {
                 $name = 'backup' . $name . '.txt';
             }
             if (file_put_contents($this->folder . $name, $file) === false) {

@@ -25,7 +25,7 @@ class Ftp extends TransportAbstract
         }
 
         $this->connection = ftp_connect($this->host);
-        if ($this->connection == false) {
+        if ($this->connection === false) {
             throw new \Exception(sprintf('I can\'t connect to the FTP %s', $this->host));
         }
 
@@ -35,8 +35,8 @@ class Ftp extends TransportAbstract
             throw new \Exception($msg);
         }
 
-        $this->setFiles($this->backup->getFilesTobackup());
-        $this->setStreams($this->backup->getStreamsTobackup());
+        $this->setFiles($this->backup->getFilesToBackup());
+        $this->setStreams($this->backup->getStreamsToBackup());
     }
 
     private function setFiles($files = array())
@@ -57,6 +57,7 @@ class Ftp extends TransportAbstract
 
     /**
      * @return bool
+     * @throws \Exception
      */
     public function send()
     {
@@ -74,7 +75,7 @@ class Ftp extends TransportAbstract
 
         if (!empty($this->streams)) {
             foreach ($this->streams as $name => $stream) {
-                if (count(explode('.', $name)) < 2) {
+                if (substr_count($name, '.') + 1 < 2) {
                     $name = 'backup' . $name . '.txt';
                 }
                 file_put_contents($name, $stream);

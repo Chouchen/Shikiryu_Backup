@@ -30,21 +30,25 @@ class Dropbox extends TransportAbstract
     public function send()
     {
         $sent = true;
-        $files = $this->backup->getFilesTobackup();
+        $files = $this->backup->getFilesToBackup();
         foreach ($files as $file => $name) {
-            $file = fopen($file, 'r');
+            $file = fopen($file, 'rb');
             $upload = $this->dropbox->uploadFile($this->folder.'/'.$name, \Dropbox\WriteMode::force(), $file);
             if (!$upload) {
                 $sent = false;
                 echo 'DROPBOX upload manqu�e de '.$file.' vers '.$this->folder.$name;
             }
         }
-        $streams = $this->backup->getStreamsTobackup();
+        $streams = $this->backup->getStreamsToBackup();
         foreach ($streams as $stream => $name) {
-            $upload = $this->dropbox->uploadFileFromString($this->folder.'/'.$name, \Dropbox\WriteMode::force(), $stream);
+            $upload = $this->dropbox->uploadFileFromString(
+                $this->folder . '/' . $name,
+                \Dropbox\WriteMode::force(),
+                $stream
+            );
             if (!$upload) {
                 $sent = false;
-                echo 'DROPBOX upload manqu�e de '.$file.' vers '.$this->folder.$name;
+                echo 'DROPBOX upload manquée de ' . $file . ' vers '.$this->folder.$name;
             }
         }
         return $sent;

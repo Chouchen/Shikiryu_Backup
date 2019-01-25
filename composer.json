@@ -12,7 +12,13 @@
   ],
   "require": {
     "phpseclib/phpseclib": ">=1.0.0",
-    "dropbox/dropbox-sdk": "~1.1"
+    "dropbox/dropbox-sdk": "~1.1",
+    "ext-fileinfo": "*",
+    "ext-zip": "*",
+    "ext-ftp": "*",
+    "ext-pdo": "*",
+    "ext-mbstring": "*",
+    "ext-json": "*"
   },
   "autoload": {
     "classmap": ["app/code/", "vendor/"]

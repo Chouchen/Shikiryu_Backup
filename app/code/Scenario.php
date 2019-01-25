@@ -54,7 +54,7 @@ class Scenario
         if ($this->backup->isValid()) {
             $this->transport->send();
         } else {
-            throw new \Exception("Backup configuration is invalid.");
+            throw new \Exception('Backup configuration is invalid.');
         }
     }
 
@@ -75,7 +75,7 @@ class Scenario
         // check the given scenario
         if (is_readable($scenario)) {
             $scenario = json_decode(file_get_contents($scenario), true);
-            if (!is_null($scenario) && static::isValid($scenario)) {
+            if ($scenario !== null && static::isValid($scenario)) {
                 try {
                     $scenario = new self($scenario);
                     $scenario->send();
@@ -99,9 +99,8 @@ class Scenario
     public static function isValid(array $scenario)
     {
         return
-            isset($scenario['backup']) &&
+            isset($scenario['backup'], $scenario['transport']) &&
             count($scenario['backup']) === 1 &&
-            isset($scenario['transport']) &&
             count($scenario['transport']) === 1;
     }
 }

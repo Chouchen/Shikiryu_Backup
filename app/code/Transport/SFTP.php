@@ -42,7 +42,7 @@ class Sftp extends TransportAbstract
     public function send()
     {
         $sent = true;
-        $files = $this->backup->getFilesTobackup();
+        $files = $this->backup->getFilesToBackup();
         if (!empty($files)) {
             foreach ($files as $file => $name) {
                 $upload = $this->connection->put($this->folder.'/'.$name, $file, LibSFTP::SOURCE_LOCAL_FILE);
@@ -53,12 +53,12 @@ class Sftp extends TransportAbstract
             }
         }
 
-        $streams = $this->backup->getStreamsTobackup();
+        $streams = $this->backup->getStreamsToBackup();
         if (!empty($streams)) {
             foreach ($streams as $name => $stream) {
                 $upload = $this->connection->put($this->folder.'/'.$name, $stream);
                 if (!$upload) {
-                    echo 'SFTP upload manqu�e de '.$name.' vers '.$this->folder.$name;
+                    echo 'SFTP upload manquée de '.$name.' vers '.$this->folder.$name;
                     $sent = false;
                 }
             }

@@ -151,7 +151,7 @@ abstract class BackupAbstract
         foreach ($this->options as $name => $value) {
             $method = sprintf('setOption%s', ucfirst($name));
             if (method_exists($this, $method)) {
-                call_user_func([$this, $method], $value);
+                $this->$method($value);
             }
         }
 
@@ -174,7 +174,7 @@ abstract class BackupAbstract
         if (touch(TEMP_DIR . $zip_name) === false) {
             throw new \Exception('Backup::Zip::Permission denied.');
         }
-        if ($zip->open(TEMP_DIR . $zip_name, \ZipArchive::OVERWRITE) == true) {
+        if ($zip->open(TEMP_DIR . $zip_name, \ZipArchive::OVERWRITE) === true) {
             foreach ($this->files_to_backup as $file => $name) {
                 $zip->addFile($file, $name); // Adding files into zip
             }
