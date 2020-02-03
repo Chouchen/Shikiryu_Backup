@@ -2,8 +2,7 @@
 
 namespace Shikiryu\Backup\Transport;
 
-use Dropbox\Client;
-use Shikiryu\Backup\Transport\TransportAbstract;
+use Spatie\Dropbox\Client;
 
 class Dropbox extends TransportAbstract
 {
@@ -15,13 +14,13 @@ class Dropbox extends TransportAbstract
     private $dropbox;
 
     protected $token    = '';
-    protected $app      = '';
+//    protected $app      = '';
     protected $folder   = '';
 
     public function __construct($backup, $config)
     {
         parent::__construct($backup, $config);
-        $this->dropbox = new Client($this->token, $this->app);
+        $this->dropbox = new Client($this->token);
     }
 
     /**
@@ -33,7 +32,7 @@ class Dropbox extends TransportAbstract
         $files = $this->backup->getFilesToBackup();
         foreach ($files as $file => $name) {
             $file = fopen($file, 'rb');
-            $upload = $this->dropbox->uploadFile($this->folder.'/'.$name, \Dropbox\WriteMode::force(), $file);
+            $upload = $this->dropbox->upload($this->folder.'/'.$name, $file);
             if (!$upload) {
                 $sent = false;
                 echo 'DROPBOX upload manqu�e de '.$file.' vers '.$this->folder.$name;
@@ -41,11 +40,7 @@ class Dropbox extends TransportAbstract
         }
         $streams = $this->backup->getStreamsToBackup();
         foreach ($streams as $stream => $name) {
-            $upload = $this->dropbox->uploadFileFromString(
-                $this->folder . '/' . $name,
-                \Dropbox\WriteMode::force(),
-                $stream
-            );
+            $upload = $this->dropbox->upload($this->folder . '/' . $name, $stream);
             if (!$upload) {
                 $sent = false;
                 echo 'DROPBOX upload manquée de ' . $file . ' vers '.$this->folder.$name;

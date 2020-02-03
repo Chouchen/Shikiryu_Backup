@@ -9,7 +9,6 @@ use Shikiryu\Backup\Transport\Factory as TransportFactory;
 
 class Scenario
 {
-
     /* @var $backup BackupAbstract */
     private $backup;
     /* @var $to TransportAbstract */
@@ -18,18 +17,7 @@ class Scenario
     public static function register()
     {
         include __DIR__.'/../../vendor/autoload.php';
-        //spl_autoload_register(array(__CLASS__, 'autoload'));
     }
-
-    /*public static function autoload($class)
-    {
-        if (strpos($class, __NAMESPACE__.'\\') === 0)
-        {
-            $relative_NS     = str_replace(__NAMESPACE__, '', $class);
-            $translated_path = str_replace('\\', '/', $relative_NS);
-            require __DIR__ . '/' . $translated_path . '.php';
-        }
-    }*/
 
     /**
      * @param array $scenario
@@ -69,8 +57,6 @@ class Scenario
     {
         // add autoloader
         static::register();
-
-        $scenario = __DIR__.'/../scenario/'.$scenario;
 
         // check the given scenario
         if (is_readable($scenario)) {

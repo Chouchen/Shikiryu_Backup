@@ -3,7 +3,6 @@ namespace Shikiryu\Backup\Backup;
 
 class Files extends BackupAbstract
 {
-
     /**
      * @param array $config
      * @throws \Exception
