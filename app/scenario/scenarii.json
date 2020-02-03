@@ -24,6 +24,13 @@
       "subject"   : "[Example.net] backup of the day",
       "message"   : "Hi,\n\nYou can find your backup in this mail.\n\nRegards,\nMyself."
     },
+    "Sftp": {
+      "host"      : "sftp.domain.com",
+      "port"      : "22",
+      "login"     : "login",
+      "password"  : "password",
+      "folder"    : "/folder"
+    },
     "Ftp": {
       "host"      : "ftp.domain.com",
       "login"     : "login",
@@ -32,6 +39,9 @@
     },
     "Folder": {
 
+    },
+    "Dropbox": {
+      "token": "123456789123456789"
     }
   }
 }
