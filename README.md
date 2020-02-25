@@ -1,4 +1,4 @@
-# Shikiryu Backup ![language](https://img.shields.io/badge/language-php-blue.svg) ![issues](https://img.shields.io/github/issues-raw/Chouchen/Shikiryu_backup)
+# Shikiryu Backup ![language](https://img.shields.io/badge/language-php-blue.svg) ![issues](https://img.shields.io/github/issues-raw/Chouchen/Shikiryu_backup) ![ci](http://ci.canhelpme.com/build-status/image/1?branch=master&label=PHPCensor&style=flat-square)
 
 > Because even small websites need to be backed up
 
