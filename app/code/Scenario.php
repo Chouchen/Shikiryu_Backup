@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shikiryu\Backup;
 
@@ -6,17 +6,29 @@ use Shikiryu\Backup\Backup\BackupAbstract;
 use Shikiryu\Backup\Transport\TransportAbstract;
 use Shikiryu\Backup\Backup\Factory as BackupFactory;
 use Shikiryu\Backup\Transport\Factory as TransportFactory;
+use Shikiryu\Exceptions\BackupException;
+use Shikiryu\Exceptions\ComposerNotFoundException;
+use Shikiryu\Exceptions\ScenarioException;
+use Shikiryu\Exceptions\ScenarioNotFoundException;
 
-class Scenario
+final class Scenario
 {
     /* @var $backup BackupAbstract */
     private $backup;
     /* @var $to TransportAbstract */
     private $transport;
 
+    /**
+     * @throws ComposerNotFoundException
+     */
     public static function register()
     {
-        include __DIR__.'/../../vendor/autoload.php';
+        $autoload_file = __DIR__ . '/../../vendor/autoload.php';
+        if (file_exists($autoload_file)) {
+            include $autoload_file;
+        } else {
+            throw new ComposerNotFoundException(sprintf('Autoloadfile «%s» not found.', $autoload_file));
+        }
     }
 
     /**
@@ -32,18 +44,19 @@ class Scenario
     /**
      * check if backup is valid and then launch the transfer
      *
+     * @return bool
+     * @throws BackupException
      * @see BackupAbstract::isValid
      * @see TransportAbstract::send
      *
-     * @throws \Exception
      */
-    public function send()
+    public function send(): bool
     {
         if ($this->backup->isValid()) {
-            $this->transport->send();
-        } else {
-            throw new \Exception('Backup configuration is invalid.');
+            return $this->transport->send();
         }
+
+        throw new BackupException('Backup configuration is invalid.');
     }
 
     /**
@@ -51,9 +64,13 @@ class Scenario
      *
      * @param $scenario
      *
-     * @throws \Exception
+     * @return bool
+     * @throws BackupException
+     * @throws ComposerNotFoundException
+     * @throws ScenarioException
+     * @throws ScenarioNotFoundException
      */
-    public static function launch($scenario)
+    public static function launch($scenario): bool
     {
         // add autoloader
         static::register();
@@ -64,15 +81,15 @@ class Scenario
             if ($scenario !== null && static::isValid($scenario)) {
                 try {
                     $scenario = new self($scenario);
-                    $scenario->send();
-                } catch (\Exception $e) {
+                    return $scenario->send();
+                } catch (BackupException $e) {
                     throw $e;
                 }
-                exit;
             }
-            throw new \Exception('invalid scenario.');
+            throw new ScenarioException('invalid scenario.');
         }
-        throw new \Exception('scenario not found.');
+
+        throw new ScenarioNotFoundException(sprintf('scenario «%s» not found.', $scenario));
     }
 
     /**
@@ -82,7 +99,7 @@ class Scenario
      *
      * @return bool
      */
-    public static function isValid(array $scenario)
+    public static function isValid(array $scenario): bool
     {
         return
             isset($scenario['backup'], $scenario['transport']) &&

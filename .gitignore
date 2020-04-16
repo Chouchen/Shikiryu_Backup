@@ -1,2 +1,4 @@
 .idea
 /vendor
+/app/temp/*
+!/app/temp/.gitkeep

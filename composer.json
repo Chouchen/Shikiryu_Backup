@@ -6,7 +6,7 @@
     {
       "name": "Shikiryu",
       "email": "backup@desmidt.fr",
-      "homepage": "http://shikiryu.com",
+      "homepage": "https://shikiryu.com",
       "role": "Developer"
     }
   ],
@@ -21,9 +21,10 @@
     "spatie/dropbox-api": "^1.11"
   },
   "require-dev": {
-    "roave/security-advisories": "dev-master"
+    "roave/security-advisories": "dev-master",
+    "phpunit/phpunit": "^9"
   },
   "autoload": {
-    "classmap": ["app/code/", "vendor/"]
+    "classmap": ["app/code/", "vendor/", "tests/"]
   }
 }
