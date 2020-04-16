@@ -1,16 +1,21 @@
 <?php
+
 namespace Shikiryu\Backup\Backup;
+
+use Shikiryu\Exceptions\BackupException;
 
 class Files extends BackupAbstract
 {
+    use IsLocalTrait;
+
     /**
      * @param array $config
-     * @throws \Exception
+     * @throws BackupException
      */
-    public function __construct(array $config = array())
+    public function __construct(array $config = [])
     {
         if (!isset($config['files'])) {
-            throw new \Exception('Files needs a "files" configuration.');
+            throw new BackupException('Files needs a "files" configuration.');
         }
         $filesToBackup = $config['files'];
         if (!empty($filesToBackup) && is_array($filesToBackup)) {
@@ -27,7 +32,7 @@ class Files extends BackupAbstract
      *
      * @SuppressWarnings("unused")
      */
-    public function isValid()
+    public function isValid(): bool
     {
         $result = true;
         foreach ($this->files_to_backup as $file => $name) {

@@ -4,6 +4,7 @@ namespace Shikiryu\Backup\Backup;
 
 class Mysql extends BackupAbstract
 {
+    use IsLocalTrait;
 
     /**
     * @var $pdo \PDO
@@ -22,7 +23,7 @@ class Mysql extends BackupAbstract
     /**
     * @param array $config
     */
-    public function __construct(array $config = array())
+    public function __construct(array $config = [])
     {
         parent::__construct($config);
     }
@@ -31,7 +32,7 @@ class Mysql extends BackupAbstract
     * @param array $tables
     * @return $this|string
     */
-    private function fromTables($tables = array())
+    private function fromTables($tables = [])
     {
         if (!empty($tables)) {
             $this->tables = $tables;

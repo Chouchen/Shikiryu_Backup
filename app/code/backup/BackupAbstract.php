@@ -28,7 +28,7 @@ abstract class BackupAbstract
      *
      * @param array $config array of options and parameters
      */
-    public function __construct($config = array())
+    public function __construct($config = [])
     {
 
         $this->options = !empty($config['options']) ? $config['options'] : [];

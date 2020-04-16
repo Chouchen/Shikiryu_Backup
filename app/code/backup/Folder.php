@@ -4,6 +4,8 @@ namespace Shikiryu\Backup\Backup;
 
 class Folder extends BackupAbstract
 {
+    use IsLocalTrait;
+
     public function __construct(array $config = array())
     {
         parent::__construct($config);
