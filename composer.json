@@ -21,8 +21,11 @@
     "spatie/dropbox-api": "^1.11"
   },
   "require-dev": {
-    "roave/security-advisories": "dev-master",
-    "phpunit/phpunit": "^9"
+    "roave/security-advisories": "dev-latest",
+    "phpunit/phpunit": "^9",
+    "phpmd/phpmd" : "@stable",
+    "squizlabs/php_codesniffer": "3.*",
+    "sebastian/phpcpd": "6.*"
   },
   "autoload": {
     "classmap": ["app/code/", "vendor/", "tests/"]
