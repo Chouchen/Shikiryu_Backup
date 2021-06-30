@@ -2,6 +2,9 @@
 
 namespace Shikiryu\Backup\Backup;
 
+use Exception;
+use ZipArchive;
+
 abstract class BackupAbstract
 {
     /**
@@ -163,18 +166,18 @@ abstract class BackupAbstract
      * Enabled via options
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     protected function setOptionZip()
     {
-        $zip = new \ZipArchive();
+        $zip = new ZipArchive();
         // Zip name
         $zip_name = !empty($this->options['name']) ? $this->options['name'] : time();
         $zip_name = sprintf('%s.zip', $zip_name);
         if (touch(TEMP_DIR . $zip_name) === false) {
-            throw new \Exception('Backup::Zip::Permission denied.');
+            throw new Exception('Backup::Zip::Permission denied.');
         }
-        if ($zip->open(TEMP_DIR . $zip_name, \ZipArchive::OVERWRITE) === true) {
+        if ($zip->open(TEMP_DIR . $zip_name, ZipArchive::OVERWRITE) === true) {
             foreach ($this->files_to_backup as $file => $name) {
                 $zip->addFile($file, $name); // Adding files into zip
             }
@@ -184,7 +187,7 @@ abstract class BackupAbstract
             }
             $zip->close();
         } else {
-            throw new \Exception('Backup::Zip::Can\'t zip the given backup.');
+            throw new Exception('Backup::Zip::Can\'t zip the given backup.');
         }
 
         $this->files_to_backup = [TEMP_DIR . $zip_name => $zip_name];
@@ -260,14 +263,14 @@ abstract class BackupAbstract
      *
      * @param mixed $name option's name
      *
-     * @throws \Exception
+     * @throws Exception
      *
      * @SuppressWarnings("unused")
      */
     protected function setOptionName($name)
     {
         if (empty($this->options['zip'])) {
-            throw new \Exception('name option is for zip only.');
+            throw new Exception('name option is for zip only.');
         }
     }
 }

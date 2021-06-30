@@ -10,6 +10,6 @@ steps:
   - name: test
     image: php:7
     commands:
-      - vendor/bin/phpmd
+      - vendor/bin/phpmd app text phpmd.xml
       - vendor/bin/phpcs --standard=PSR2 app
-      - vendor/bin/phpcpd
+      - vendor/bin/phpcpd app

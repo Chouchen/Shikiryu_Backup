@@ -2,7 +2,9 @@
 
 namespace Shikiryu\Backup\Transport;
 
+use Exception;
 use Shikiryu\Backup\Backup\BackupAbstract;
+use ZIPARCHIVE;
 
 class Email extends TransportAbstract
 {
@@ -194,7 +196,7 @@ class Email extends TransportAbstract
      *
      * @see #mail
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function send()
     {
@@ -202,9 +204,9 @@ class Email extends TransportAbstract
         // TODO check if file is empty
     
         // Checking files are selected
-        $zip = new \ZipArchive(); // Load zip library
+        $zip = new ZipArchive(); // Load zip library
         $zip_name = time(). '.zip'; // Zip name
-        if ($zip->open(TEMP_DIR.$zip_name, \ZIPARCHIVE::CREATE)===true) {
+        if ($zip->open(TEMP_DIR.$zip_name, ZIPARCHIVE::CREATE)===true) {
             if (!empty($this->files)) {
                 foreach ($this->files as $file => $name) {
                     $zip->addFile($file, $name); // Adding files into zip
@@ -212,7 +214,7 @@ class Email extends TransportAbstract
             }
             $zip->close();
         } else {
-            throw new \Exception('Transport::Email::Can\'t zip the given backup.');
+            throw new Exception('Transport::Email::Can\'t zip the given backup.');
         }
         
         $this->files = array(TEMP_DIR.$zip_name=>$zip_name);

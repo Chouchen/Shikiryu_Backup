@@ -2,7 +2,9 @@
 
 namespace Shikiryu\Backup\Transport;
 
+use Exception;
 use phpseclib\Net\SFTP as LibSFTP;
+use Shikiryu\Backup\Backup\BackupAbstract;
 
 class Sftp extends TransportAbstract
 {
@@ -20,9 +22,9 @@ class Sftp extends TransportAbstract
     private $connection;
 
     /**
-     * @param \Shikiryu\Backup\Backup\BackupAbstract $backup
+     * @param BackupAbstract $backup
      * @param array $config
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($backup, $config)
     {
@@ -30,14 +32,14 @@ class Sftp extends TransportAbstract
 
         $this->connection = new LibSFTP($this->host, $this->port);
         if (!$this->connection->login($this->login, $this->password)) {
-            throw new \Exception(sprintf('I can\'t connect to the FTP %s', $this->host));
+            throw new Exception(sprintf('I can\'t connect to the FTP %s', $this->host));
         }
     }
 
     /**
      * @return bool
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function send()
     {
@@ -65,7 +67,7 @@ class Sftp extends TransportAbstract
         }
 
         if (!$sent) {
-            throw new \Exception('At least an upload didnt work.');
+            throw new Exception('At least an upload didnt work.');
         }
         return $sent;
     }

@@ -2,6 +2,7 @@
 
 namespace Shikiryu\Backup\Backup;
 
+use Exception;
 use phpseclib\Crypt\RSA;
 use phpseclib\Net\SFTP as LibSFTP;
 use phpseclib\Net\SSH2;
@@ -28,7 +29,7 @@ class SFTP extends BackupAbstract
     public function __construct($config = [])
     {
         if (!isset($config['files'])) {
-            throw new \Exception('Files needs a "files" configuration.');
+            throw new Exception('Files needs a "files" configuration.');
         }
         $filesToBackup = $config['files'];
         if (!empty($filesToBackup) && is_array($filesToBackup)) {
@@ -65,7 +66,7 @@ class SFTP extends BackupAbstract
 
     /**
      * @inheritDoc
-     * @throws \Exception
+     * @throws Exception
      */
     public function isValid()
     {
@@ -79,7 +80,7 @@ class SFTP extends BackupAbstract
             $this->password->loadKey(file_get_contents($this->key));
         }
         if (!$this->connection->login($this->login, $this->password)) {
-            throw new \Exception(sprintf('I can\'t connect to the SFTP %s', $this->host));
+            throw new Exception(sprintf('I can\'t connect to the SFTP %s', $this->host));
         }
 
         $this->connection->enableQuietMode();
@@ -103,7 +104,7 @@ class SFTP extends BackupAbstract
         try {
             $tmp_backup = new Files(['files' => $tmp_files]);
             unset($tmp_files);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo $e->getMessage();
         }
 

@@ -2,6 +2,8 @@
 
 namespace Shikiryu\Backup\Transport;
 
+use Exception;
+
 class Ftp extends TransportAbstract
 {
 
@@ -26,13 +28,13 @@ class Ftp extends TransportAbstract
 
         $this->connection = ftp_connect($this->host);
         if ($this->connection === false) {
-            throw new \Exception(sprintf('I can\'t connect to the FTP %s', $this->host));
+            throw new Exception(sprintf('I can\'t connect to the FTP %s', $this->host));
         }
 
-        $login = @ftp_login($this->connection, $this->login, $this->password);
+        $login = ftp_login($this->connection, $this->login, $this->password);
         if ($login === false) {
             $msg = sprintf('Connexion FTP %s refusée avec %s et %s', $this->host, $this->login, $this->password);
-            throw new \Exception($msg);
+            throw new Exception($msg);
         }
 
         $this->setFiles($this->backup->getFilesToBackup());
@@ -57,7 +59,7 @@ class Ftp extends TransportAbstract
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function send()
     {
@@ -89,7 +91,7 @@ class Ftp extends TransportAbstract
         }
 
         if (!$sent) {
-            throw new \Exception('At least an upload didnt work.');
+            throw new Exception('At least an upload didnt work.');
         }
 
         return $sent;

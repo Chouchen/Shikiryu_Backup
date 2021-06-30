@@ -2,12 +2,14 @@
 
 namespace Shikiryu\Backup\Backup;
 
+use PDO;
+
 class Mysql extends BackupAbstract
 {
     use IsLocalTrait;
 
     /**
-    * @var $pdo \PDO
+    * @var $pdo PDO
     */
     private $pdo;
 
@@ -106,7 +108,7 @@ class Mysql extends BackupAbstract
     */
     protected function preBuild()
     {
-        $this->pdo = new \PDO('mysql:host='.$this->host.';dbname='.$this->database, $this->login, $this->pwd);
+        $this->pdo = new PDO('mysql:host='.$this->host.';dbname='.$this->database, $this->login, $this->pwd);
     }
 
     /**
