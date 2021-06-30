@@ -11,5 +11,5 @@ steps:
     image: php:7
     commands:
       - vendor/bin/phpmd
-      - vendor/bin/phpcs --standard=PSR2
+      - vendor/bin/phpcs --standard=PSR2 app
       - vendor/bin/phpcpd
