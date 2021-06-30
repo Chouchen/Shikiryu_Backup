@@ -1,0 +1,15 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: install
+    pull: if-not-exists
+    image: composer
+    commands:
+      - composer install --ignore-platform-reqs
+  - name: test
+    image: php:7
+    commands:
+      - vendor/bin/phpmd
+      - vendor/bin/phpcs --standard=PSR2
+      - vendor/bin/phpcpd
