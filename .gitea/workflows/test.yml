@@ -1,0 +1,24 @@
+name: Format and test
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: 🕵🏻 Test
+    runs-on: linux
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Composer
+        uses: php-actions/composer@v6
+        with:
+          args: --ignore-platform-reqs
+
+      - name: PHPMD, PHPCS & PHPCPD
+        run: |
+          vendor/bin/phpmd app text phpmd.xml
+          vendor/bin/phpcs --standard=PSR2 app
+          vendor/bin/phpcpd app
