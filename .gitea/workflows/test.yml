@@ -11,14 +11,13 @@ jobs:
     runs-on: linux
     steps:
       - uses: actions/checkout@v3
-
       - name: Composer
         uses: php-actions/composer@v6
         with:
           args: --ignore-platform-reqs
-
-      - name: PHPMD, PHPCS & PHPCPD
-        run: |
-          vendor/bin/phpmd app text phpmd.xml
-          vendor/bin/phpcs --standard=PSR2 app
-          vendor/bin/phpcpd app
+      - name: PHPMD
+        run: vendor/bin/phpmd app text phpmd.xml
+      - name: PHPCS
+        run: vendor/bin/phpcs --standard=PSR2 app
+      - name: PHPCPD
+        run: vendor/bin/phpcpd app
